@@ -14,7 +14,7 @@
    import vunit_pkg::*; \
    initial \
      if (__runner__.setup(parameter_name)) \
-      while (__runner__.loop)
+      while (__runner__.loop())
 
 `define TEST_SUITE `TEST_SUITE_FROM_PARAMETER(runner_cfg)
 `define NESTED_TEST_SUITE `TEST_SUITE_FROM_PARAMETER(nested_runner_cfg)
@@ -51,5 +51,5 @@
                   end \
                end \
              full_msg = {"CHECK_EQUAL failed! Got ",`"got`", "=",  got_str, " expected ", expected_str, ". ", msg}; \
-             $error(full_msg); \
+             $fatal(full_msg); \
           end
