@@ -214,7 +214,11 @@ class SimulatorInterface(object):  # pylint: disable=too-many-public-methods
             return False
 
         try:
-            output = check_output(command, env=self.get_env())
+            cwd = None
+            if isinstance(command, dict):
+                cwd = command['workdir']
+                command = command['cmd']
+            output = check_output(command, cwd=cwd, env=self.get_env())
             printer.write("passed", fg="gi")
             printer.write("\n")
             printer.write(output)
@@ -335,13 +339,13 @@ def run_command(command, cwd=None, env=None):
     return False
 
 
-def check_output(command, env=None):
+def check_output(command, cwd=None, env=None):
     """
     Wrapper arround subprocess.check_output
     """
     try:
         output = subprocess.check_output(  # pylint: disable=unexpected-keyword-arg
-            command, env=env, stderr=subprocess.STDOUT
+            command, cwd=cwd, env=env, stderr=subprocess.STDOUT
         )
     except subprocess.CalledProcessError as err:
         err.output = err.output.decode("utf-8")
