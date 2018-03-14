@@ -10,44 +10,48 @@ testing of your HDL code. VUnit doesn't replace but rather complements
 traditional testing methodologies by supporting a "test early and
 often" approach through automation.
 
-**NOTE:** SystemVerilog support is experimental.
+VUnit reduces the overhead of testing by supporting automatic
+discovery of test benches and compilation order as well as including
+libraries for common verification tasks. It improves the speed of
+development by supporting incremental compilation and by enabling
+large test benches to be split up into smaller independent tests. It
+increases the quality of projects by enabling large regression suites
+to be run on a continuous integration server.
 
-Project Mission
----------------
-
-The VUnit project mission is to apply best SW testing practices to the
-world of HDLs by providing the tools missing to adapt to such
-practices. The major missing piece is the unit testing framework,
-hence the name V(HDL)Unit. However, VUnit also provides supporting
-functionality not normally considered as a part of a unit testing
-framework.
+VUnit does not impose any specific verification methodology on its
+users. The benefits of VUnit can be enjoyed when writing tests first
+or last, when writing long running top level tests or short running
+unit tests, when using directed or constrained random testing. Often
+projects adopt mix of approaches for different testing needs. VUnit
+has been used in production environments where thousands of tests take
+several hours to run on powerful multi-core machines as well as in
+small open source projects where only a small package is tested in a
+few seconds.
 
 Main Features
 -------------
 
--  Builds on the commonly used `xUnit`_ architecture.
--  Python test runner that enables powerful test administration, can
-   handle fatal run-time errors (e.g. division by zero), and
-   ensures test case independence.
--  Scanners for identifying files, tests, file dependencies, and file
+-  Python test suite runner that enables powerful test administration,
+   can continue testing after fatal run-time errors (e.g. division by
+   zero), and ensures test case independence.
+-  Automatic scanning of files for tests, file dependencies, and file
    changes enable automatic (re)compilation and execution of test
    suites.
 -  Can run test cases in parallel to take advantage of multi-core
    machines.
+-  Support for running test benches with multiple generic/parameter settings.
 -  :ref:`Scriptable API <python_interface>` as well as :ref:`command line <cli>`
    support.
--  Support for running same test suite with different generics.
--  :doc:`VHDL test runner <./run/user_guide>` which enables test execution for not fully supported
-   simulators.
+-  Has ``--gui`` switch to launch test cases in the simulator GUI when debugging is necessary.
 -  :doc:`Assertion checker library <./check/user_guide>` that extends VHDL built-in support
    (assert).
 -  :doc:`Logging framework <./logging/user_guide>` supporting display and file output, different log
-   levels, filtering on level and design hierarchy, output formatting
-   and multiple loggers. Spreadsheet tool integration.
--  Location preprocessor that traces log and check calls back to file
+   levels, visibility settings of levels and design hierarchy, output formatting
+   and multiple loggers. Supports machine readable output formats that for example can be read by a spreadsheet.
+-  Optional location preprocessor that traces log and check calls back to file
    and line number.
--  JUnit report files for better `Jenkins`_ :ref:`integration
-   <continuous_integration>`.
+-  Outputs JUnit report files for better `Jenkins`_ :ref:`integration <continuous_integration>`.
+-  Builds on the commonly used `xUnit`_ architecture.
 
 Requirements
 ------------
@@ -55,9 +59,9 @@ Requirements
 VUnit depends on a number of components as listed below. Full VUnit
 functionality requires Python and a simulator supported by the VUnit
 Python test runner. However, VUnit can run with limited functionality
-entirely within VHDL which means that unsupported simulators can be used
-as well. Prototype work has been done to fully support other simulators
-but this work is yet to be completed and released.
+entirely within VHDL using the :doc:`VHDL test runner
+<./run/user_guide>`.
+
 
 Languages
 *********
@@ -66,7 +70,7 @@ Languages
 -  VHDL-2002
 -  VHDL-2008
 -  Verilog
--  SystemVerilog
+-  SystemVerilog (Support is experimental)
 
 Operating systems
 *****************
@@ -79,7 +83,7 @@ Python
 ******
 
 -  Python 2.7
--  Python 3.3 or higher
+-  Python 3.4 or higher
 
 Simulators
 **********
@@ -103,8 +107,11 @@ Simulators
    -  Integrated support for using `GTKWave`_ to view waveforms.
 -  `Cadence Incisive`_ (**Experimental**)
 
-   -  Community contribution. VUnit maintainers does not have access to this simulator to verify the functionality.
-   -  Run ``incisive_vhdl_fixup.py`` to remove VHDL constructs that are not compatible with Incisive
+   - Community contribution by `Colin Marquardt
+     <https://github.com/cmarqu>`_.  VUnit maintainers does not have
+     access to this simulator to verify the functionality.
+   - Run ``incisive_vhdl_fixup.py`` to remove VHDL constructs that are
+      not compatible with Incisive
 
 Getting Started
 ---------------
@@ -127,11 +134,18 @@ Support
 Any bug reports, feature requests or questions about the usage of VUnit
 can be made by creating a `new issue`_.
 
-Main Contributors
------------------
+Credits
+-------
 
--  Lars Asplund
--  Olof Kraigher
+Founders
+********
+-  `Lars Asplund <https://github.com/LarsAsplund>`_
+-  `Olof Kraigher <https://github.com/kraigher>`_
+
+Notable contributors
+********************
+- `Colin Marquardt <https://github.com/cmarqu>`_ (Cadence Incisive support)
+
 
 License
 -------
@@ -144,13 +158,12 @@ VUnit
 VUnit except for OSVVM (see below) is released under the terms of
 `Mozilla Public License, v. 2.0`_.
 
-|copy| 2014-2017 Lars Asplund, lars.anders.asplund@gmail.com.
+|copy| 2014-2018 Lars Asplund, lars.anders.asplund@gmail.com.
 
 OSVVM
 *****
 
-OSVVM is `redistributed`_ with VUnit for your convenience. Derivative work
-is located under `examples/vhdl/osvvm\_integration/src`_. These
+OSVVM is `redistributed`_ with VUnit for your convenience. These
 files are licensed under the terms of `ARTISTIC License`_.
 
 |copy| 2010 - 2017 by SynthWorks Design Inc. All rights reserved.
@@ -161,7 +174,7 @@ files are licensed under the terms of `ARTISTIC License`_.
 .. _Aldec Active-HDL: https://www.aldec.com/en/products/fpga_simulation/active-hdl
 .. _Mentor Graphics ModelSim/Questa: http://www.mentor.com/products/fv/modelsim/
 .. _Cadence Incisive: https://www.cadence.com/content/cadence-www/global/en_US/home/tools/system-design-and-verification/simulation-and-testbench-verification/incisive-enterprise-simulator.html
-.. _GHDL: https://sourceforge.net/projects/ghdl-updates/
+.. _GHDL: https://github.com/ghdl/ghdl
 .. _GTKWave: http://gtkwave.sourceforge.net/
 .. _YouTube: https://www.youtube.com/channel/UCCPVCaeWkz6C95aRUTbIwdg
 .. _an introduction to unit testing (6 min): https://www.youtube.com/watch?v=PZuBqcxS8t4
@@ -171,5 +184,4 @@ files are licensed under the terms of `ARTISTIC License`_.
 .. _Mozilla Public License, v. 2.0: http://mozilla.org/MPL/2.0/
 .. _redistributed: https://github.com/VUnit/vunit/blob/master/vunit/vhdl/osvvm
 .. _modifications: https://github.com/VUnit/vunit/commit/25fce1b3700e746c3fa23bd7157777dd4f20f0d6
-.. _examples/vhdl/osvvm\_integration/src: https://github.com/VUnit/vunit/blob/master/examples/vhdl/osvvm_integration/src
 .. _ARTISTIC License: http://www.perlfoundation.org/artistic_license_2_0

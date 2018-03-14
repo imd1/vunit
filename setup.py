@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2015-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 from setuptools import setup
 from vunit.about import version, doc
@@ -48,13 +48,16 @@ setup(
                  'Natural Language :: English',
                  'Intended Audience :: Developers',
                  'Programming Language :: Python :: 2.7',
-                 'Programming Language :: Python :: 3.3',
                  'Programming Language :: Python :: 3.4',
                  'Programming Language :: Python :: 3.5',
+                 'Programming Language :: Python :: 3.6',
                  'Operating System :: Microsoft :: Windows',
                  'Operating System :: MacOS :: MacOS X',
                  'Operating System :: POSIX :: Linux',
                  'Topic :: Software Development :: Testing'],
+    install_requires=[
+        "colorama",
+    ],
     author='Lars Asplund',
     author_email='lars.anders.asplund@gmail.com',
     description="VUnit is an open source unit testing framework for VHDL/SystemVerilog.",

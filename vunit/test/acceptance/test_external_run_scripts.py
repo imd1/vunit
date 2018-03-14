@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2015-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 """
 Verify that all external run scripts work correctly
@@ -48,7 +48,37 @@ class TestExternalRunScripts(unittest.TestCase):
                       ("failed", "lib.tb_dut.Test that fail")])
 
     def test_vhdl_logging_example_project(self):
-        self.check(join(ROOT, "examples", "vhdl", "logging", "compile.py"), args=["--compile"])
+        self.check(join(ROOT, "examples", "vhdl", "logging", "run.py"))
+
+    def test_vhdl_run_example_project(self):
+        self.check(join(ROOT, "examples", "vhdl", "run", "run.py"), exit_code=1)
+        check_report(self.report_file,
+                     [("passed", "lib.tb_with_watchdog.Test to_string for boolean"),
+                      ("passed", "lib.tb_standalone.Test to_string for boolean"),
+                      ("passed", "lib.tb_with_test_cases.Test to_string for integer"),
+                      ("passed", "lib.tb_with_test_cases.Test to_string for boolean"),
+                      ("passed", "lib.tb_with_lower_level_control.Test something"),
+                      ("passed", "lib.tb_with_lower_level_control.Test something else"),
+                      ("passed", "lib.tb_running_test_case.Test scenario A"),
+                      ("passed", "lib.tb_running_test_case.Test scenario B"),
+                      ("passed", "lib.tb_running_test_case.Test something else"),
+                      ("passed", "lib.tb_minimal.all"),
+                      ("passed", "lib.tb_magic_paths.all"),
+                      ("failed", "lib.tb_with_watchdog.Test that stalls"),
+                      ("failed", "lib.tb_counting_errors.Test that fails multiple times but doesn't stop"),
+                      ("failed", "lib.tb_standalone.Test that fails on VUnit check procedure"),
+                      ("failed", "lib.tb_many_ways_to_fail.Test that fails on an assert"),
+                      ("failed", "lib.tb_many_ways_to_fail.Test that crashes on boundary problems"),
+                      ("failed", "lib.tb_many_ways_to_fail.Test that fails on VUnit check procedure")])
+
+    def test_vhdl_third_party_integration_example_project(self):
+        self.check(join(ROOT, "examples", "vhdl", "third_party_integration", "run.py"), exit_code=1)
+        check_report(self.report_file,
+                     [("passed", "lib.tb_external_framework_integration.Test that pass"),
+                      ("failed",
+                       "lib.tb_external_framework_integration.Test that stops the simulation on first error"),
+                      ("failed",
+                       "lib.tb_external_framework_integration.Test that doesn't stop the simulation on error")])
 
     def test_vhdl_check_example_project(self):
         self.check(join(ROOT, "examples", "vhdl", "check", "run.py"))
@@ -90,23 +120,28 @@ class TestExternalRunScripts(unittest.TestCase):
                       ("failed", "lib.tb_example.Test that a failing test case actually fails"),
                       ("failed", "lib.tb_example.Test that a test case that takes too long time fails with a timeout")])
 
-    def test_vhdl_osvvm_integration_example_project(self):
-        self.check(join(ROOT, "examples", "vhdl", "osvvm_integration", "run.py"), exit_code=1)
-        check_report(self.report_file,
-                     [("passed", "lib.tb_alertlog_demo_global_with_comments.Test passing alerts"),
-                      ("passed", "lib.tb_alertlog_demo_hierarchy_with_comments.Test passing alerts"),
-                      ("passed", "lib.tb_alertlog_demo_global.Test passing alerts"),
-                      ("passed", "lib.tb_alertlog_demo_hierarchy.Test passing alerts"),
-                      ("failed", "lib.tb_alertlog_demo_global_with_comments.Test failing alerts"),
-                      ("failed", "lib.tb_alertlog_demo_hierarchy_with_comments.Test failing alerts"),
-                      ("failed", "lib.tb_alertlog_demo_global.Test failing alerts"),
-                      ("failed", "lib.tb_alertlog_demo_hierarchy.Test failing alerts")])
-
     def test_vhdl_com_example_project(self):
         self.check(join(ROOT, "examples", "vhdl", "com", "run.py"))
 
     def test_array_vhdl_2008(self):
         self.check(join(VHDL_PATH, "array", "run.py"))
+
+    def test_data_types_vhdl_2008(self):
+        self.check(join(VHDL_PATH, "data_types", "run.py"))
+
+    def test_data_types_vhdl_2002(self):
+        self.check(join(VHDL_PATH, "data_types", "run.py"),
+                   vhdl_standard="2002")
+
+    def test_data_types_vhdl_93(self):
+        self.check(join(VHDL_PATH, "data_types", "run.py"),
+                   vhdl_standard="93")
+
+    def test_random_vhdl_2008(self):
+        self.check(join(VHDL_PATH, "random", "run.py"))
+
+    def test_verification_components_vhdl_2008(self):
+        self.check(join(VHDL_PATH, "verification_components", "run.py"))
 
     def test_check_vhdl_2008(self):
         self.check(join(VHDL_PATH, "check", "run.py"))
@@ -176,10 +211,6 @@ class TestExternalRunScripts(unittest.TestCase):
 
     def test_com_vhdl_2008(self):
         self.check(join(VHDL_PATH, "com", "run.py"))
-
-    def test_com_debug_vhdl_2008(self):
-        self.check(join(VHDL_PATH, "com", "run.py"),
-                   args=["--use-debug-codecs"])
 
     def setUp(self):
         self.output_path = join(dirname(__file__), "external_run_out")

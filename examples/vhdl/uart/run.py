@@ -2,13 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2014-2015, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2014-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 from os.path import join, dirname
 from vunit import VUnit
 
 ui = VUnit.from_argv()
 ui.add_osvvm()
+ui.add_verification_components()
 
 src_path = join(dirname(__file__), "src")
 

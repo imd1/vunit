@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2016-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 """
 A persistent TCL shell to avoid startup overhead in TCL-based simulators
@@ -99,6 +99,7 @@ def output_consumer(line):
         return True
 
     print(line)
+    return None
 
 
 class SilentOutputConsumer(object):
@@ -111,8 +112,9 @@ class SilentOutputConsumer(object):
     def __call__(self, line):
         if line.endswith("#VUNIT_RETURN"):
             return True
-        else:
-            self.output += line + "\n"
+
+        self.output += line + "\n"
+        return None
 
 
 class ReadVarOutputConsumer(object):

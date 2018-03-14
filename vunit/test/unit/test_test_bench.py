@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2014-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2017-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 # pylint: disable=too-many-public-methods
 
@@ -82,7 +82,7 @@ class TestTestBench(unittest.TestCase):
         else:
             assert False, "RuntimeError not raised"
 
-    def test_creates_tests(self):
+    def test_creates_tests_vhdl(self):
         design_unit = Entity('tb_entity', contents='''\
 if run("Test 1")
 --if run("Test 2")
@@ -106,6 +106,31 @@ if my_protected_variable.run("Test 10")
                                "lib.tb_entity.Test 7",
                                "lib.tb_entity.Test 8",
                                "lib.tb_entity.Test 9"])
+
+    def test_creates_tests_verilog(self):
+        design_unit = Module('tb_module', contents='''\
+`TEST_CASE("Test 1")
+`TEST_CASE  ("Test 2")
+`TEST_CASE( "Test 3"  )
+// `TEST_CASE("Test 4")
+/*
+ `TEST_CASE("Test 5")
+*/
+/* `TEST_CASE("Test 6") */
+`TEST_CASE("Test 7")
+/* comment */
+`TEST_CASE("Test 8")
+/* comment */
+''')
+        design_unit.generic_names = ["runner_cfg"]
+        test_bench = TestBench(design_unit)
+        tests = self.create_tests(test_bench)
+        self.assert_has_tests(tests,
+                              ["lib.tb_module.Test 1",
+                               "lib.tb_module.Test 2",
+                               "lib.tb_module.Test 3",
+                               "lib.tb_module.Test 7",
+                               "lib.tb_module.Test 8"])
 
     @mock.patch("vunit.test_bench.LOGGER")
     def test_duplicate_tests_cause_error(self, mock_logger):
@@ -337,6 +362,9 @@ def get_config_of(tests, test_name):
 
 
 class Module(object):
+    """
+    Mock Module
+    """
     def __init__(self, name, contents=''):
         self.name = name
         self.library_name = "lib"

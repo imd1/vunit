@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2016-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 """
 Perform necessary modifications to VUnit VHDL code to support
@@ -45,7 +45,6 @@ use vunit_lib.dictionary.all;
 use vunit_lib.path.all;
 use vunit_lib.log_types_pkg.all;
 use vunit_lib.log_special_types_pkg.all;
-use vunit_lib.log_pkg.all;
 use vunit_lib.check_types_pkg.all;
 use vunit_lib.check_special_types_pkg.all;
 use vunit_lib.check_pkg.all;

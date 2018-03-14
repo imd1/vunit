@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2016-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 """
 Test the RivieraPro interface
@@ -27,9 +27,8 @@ class TestRivieraProInterface(unittest.TestCase):
     @mock.patch("vunit.simulator_interface.check_output", autospec=True, return_value="")
     @mock.patch("vunit.rivierapro_interface.Process", autospec=True)
     def test_compile_project_vhdl(self, process, check_output):
-        library_cfg = join(self.output_path, "library.cfg")
         simif = RivieraProInterface(prefix="prefix",
-                                    library_cfg=library_cfg)
+                                    output_path=self.output_path)
         project = Project()
         project.add_library("lib", "lib_path")
         write_file("file.vhd", "")
@@ -52,9 +51,8 @@ class TestRivieraProInterface(unittest.TestCase):
     @mock.patch("vunit.simulator_interface.check_output", autospec=True, return_value="")
     @mock.patch("vunit.rivierapro_interface.Process", autospec=True)
     def test_compile_project_vhdl_extra_flags(self, process, check_output):
-        library_cfg = join(self.output_path, "library.cfg")
         simif = RivieraProInterface(prefix="prefix",
-                                    library_cfg=library_cfg)
+                                    output_path=self.output_path)
         project = Project()
         project.add_library("lib", "lib_path")
         write_file("file.vhd", "")
@@ -81,7 +79,7 @@ class TestRivieraProInterface(unittest.TestCase):
     def test_compile_project_verilog(self, process, check_output):
         library_cfg = join(self.output_path, "library.cfg")
         simif = RivieraProInterface(prefix="prefix",
-                                    library_cfg=library_cfg)
+                                    output_path=self.output_path)
         project = Project()
         project.add_library("lib", "lib_path")
         write_file("file.v", "")
@@ -106,7 +104,7 @@ class TestRivieraProInterface(unittest.TestCase):
     def test_compile_project_system_verilog(self, process, check_output):
         library_cfg = join(self.output_path, "library.cfg")
         simif = RivieraProInterface(prefix="prefix",
-                                    library_cfg=library_cfg)
+                                    output_path=self.output_path)
         project = Project()
         project.add_library("lib", "lib_path")
         write_file("file.sv", "")
@@ -132,7 +130,7 @@ class TestRivieraProInterface(unittest.TestCase):
     def test_compile_project_verilog_extra_flags(self, process, check_output):
         library_cfg = join(self.output_path, "library.cfg")
         simif = RivieraProInterface(prefix="prefix",
-                                    library_cfg=library_cfg)
+                                    output_path=self.output_path)
         project = Project()
         project.add_library("lib", "lib_path")
         write_file("file.v", "")
@@ -159,7 +157,7 @@ class TestRivieraProInterface(unittest.TestCase):
     def test_compile_project_verilog_include(self, process, check_output):
         library_cfg = join(self.output_path, "library.cfg")
         simif = RivieraProInterface(prefix="prefix",
-                                    library_cfg=library_cfg)
+                                    output_path=self.output_path)
         project = Project()
         project.add_library("lib", "lib_path")
         write_file("file.v", "")
@@ -184,7 +182,7 @@ class TestRivieraProInterface(unittest.TestCase):
     def test_compile_project_verilog_define(self, process, check_output):
         library_cfg = join(self.output_path, "library.cfg")
         simif = RivieraProInterface(prefix="prefix",
-                                    library_cfg=library_cfg)
+                                    output_path=self.output_path)
         project = Project()
         project.add_library("lib", "lib_path")
         write_file("file.v", "")
@@ -213,7 +211,7 @@ class TestRivieraProInterface(unittest.TestCase):
             check_output.reset_mock()
 
             simif = RivieraProInterface(prefix="prefix",
-                                        library_cfg=library_cfg,
+                                        output_path=self.output_path,
                                         coverage="bes")
 
             project = Project()

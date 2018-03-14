@@ -183,7 +183,7 @@ Configurations
 In VUnit Python API the name ``configuration`` is used to denote the
 user controllable configuration of one test run such as
 generic/parameter settings, simulation options as well as the
-pre_config and post_check callback functions.
+pre_config and post_check :ref:`callback functions <pre_and_post_hooks>`.
 
 Configurations can either be unique for each test case or must be
 common for the entire test bench depending on the situation.  For test
@@ -232,12 +232,9 @@ from vunit.test_bench_list import TestBenchList
 from vunit.exceptions import CompileError
 from vunit.location_preprocessor import LocationPreprocessor
 from vunit.check_preprocessor import CheckPreprocessor
-from vunit.builtins import (add_vhdl_builtins,
-                            add_verilog_include_dir,
-                            add_array_util,
-                            add_osvvm,
-                            add_com)
 from vunit.parsing.encodings import HDL_FILE_ENCODING
+from vunit.builtins import (Builtins,
+                            add_verilog_include_dir)
 from vunit.com import codec_generator
 
 LOGGER = logging.getLogger(__name__)
@@ -308,7 +305,6 @@ class VUnit(object):  # pylint: disable=too-many-instance-attributes, too-many-p
         self._external_preprocessors = []
         self._location_preprocessor = None
         self._check_preprocessor = None
-        self._use_debug_codecs = args.use_debug_codecs
 
         self._simulator_factory = SIMULATOR_FACTORY
         self._simulator_output_path = join(self._output_path, SIMULATOR_FACTORY.simulator_name)
@@ -321,8 +317,9 @@ class VUnit(object):  # pylint: disable=too-many-instance-attributes, too-many-p
 
         self._test_bench_list = TestBenchList(database=database)
 
+        self._builtins = Builtins(self, self._vhdl_standard, self._simulator_factory)
         if compile_builtins:
-            self.add_builtins(library_name="vunit_lib")
+            self.add_builtins()
 
     def _create_database(self):
         """
@@ -828,10 +825,6 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
     def codecs_path(self):
         return join(self._output_path, "codecs")
 
-    @property
-    def use_debug_codecs(self):
-        return self._use_debug_codecs
-
     def _compile(self, simulator_if):
         """
         Compile entire project
@@ -856,7 +849,8 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
                             join(self._output_path, "test_output"),
                             verbosity=verbosity,
                             num_threads=self._args.num_threads,
-                            dont_catch_exceptions=self._args.dont_catch_exceptions)
+                            dont_catch_exceptions=self._args.dont_catch_exceptions,
+                            no_color=self._args.no_color)
         runner.run(test_cases)
 
     def _post_process(self, report):
@@ -869,59 +863,41 @@ avoid location preprocessing of other functions sharing name with a VUnit log or
             xml = report.to_junit_xml_str()
             ostools.write_file(self._args.xunit_xml, xml)
 
-    def add_builtins(self, library_name="vunit_lib", mock_lang=False, mock_log=False):
+    def add_builtins(self):
         """
         Add vunit VHDL builtin libraries
         """
-        library = self.add_library(library_name)
-        supports_context = self._simulator_factory.supports_vhdl_2008_contexts()
-        add_vhdl_builtins(library, self._vhdl_standard, mock_lang, mock_log,
-                          supports_context=supports_context)
+        self._builtins.add_vhdl_builtins()
 
-    def add_com(self, library_name="vunit_lib", use_debug_codecs=None):
+    def add_com(self):
         """
         Add communication package
-
-        :param use_debug_codecs: Use human readable debug codecs
-
-           `None`: Use command line argument setting
-
-           `False`: Never use debug codecs
-
-           `True`: Always use debug codecs
         """
-        if not self._project.has_library(library_name):
-            library = self.add_library(library_name)
-        else:
-            library = self.library(library_name)
+        self._builtins.add("com")
 
-        if use_debug_codecs is not None:
-            self._use_debug_codecs = use_debug_codecs
-
-        supports_context = self._simulator_factory.supports_vhdl_2008_contexts()
-
-        add_com(library, self._vhdl_standard,
-                use_debug_codecs=self._use_debug_codecs,
-                supports_context=supports_context)
-
-    def add_array_util(self, library_name="vunit_lib"):
+    def add_array_util(self):
         """
-        Add array utility package
+        Add array util
         """
-        library = self.library(library_name)
-        add_array_util(library, self._vhdl_standard)
+        self._builtins.add("array_util")
 
-    def add_osvvm(self, library_name="osvvm"):
+    def add_random(self):
+        """
+        Add random
+        """
+        self._builtins.add("random")
+
+    def add_verification_components(self):
+        """
+        Add verification component library
+        """
+        self._builtins.add("verification_components")
+
+    def add_osvvm(self):
         """
         Add osvvm library
         """
-        if not self._project.has_library(library_name):
-            library = self.add_library(library_name)
-        else:
-            library = self.library(library_name)
-        simulator_coverage_api = self._simulator_factory.get_osvvm_coverage_api()
-        supports_vhdl_package_generics = self._simulator_factory.supports_vhdl_package_generics()
-        add_osvvm(library, simulator_coverage_api, supports_vhdl_package_generics)
+        self._builtins.add("osvvm")
 
     def get_compile_order(self, source_files=None):
         """
@@ -1332,7 +1308,8 @@ class TestBench(object):
 
     def set_pre_config(self, value):
         """
-        Set pre_config function of all |configurations| of this test bench or test cases within it
+        Set :ref:`pre_config <pre_and_post_hooks>` function of all
+        |configurations| of this test bench or test cases within it
 
         :param value: The pre_config function
         """
@@ -1340,7 +1317,8 @@ class TestBench(object):
 
     def set_post_check(self, value):
         """
-        Set post_check function of all |configurations| of this test bench or test cases within it
+        Set :ref:`post_check <pre_and_post_hooks>` function of all
+        |configurations| of this test bench or test cases within it
 
         :param value: The post_check function
         """
@@ -1357,18 +1335,8 @@ class TestBench(object):
         :param name: The name of the configuration. Will be added as a suffix on the test name
         :param generics: A `dict` containing the generics to be set in addition to the default configuration
         :param parameters: A `dict` containing the parameters to be set in addition to the default configuration
-        :param pre_config: A function to be called before test execution, replaces the default if not None
-           The function accepts an optional first argument `output_path` which is the filesystem path to the
-           directory where test outputs are stored. An optional second argument
-           `simulator_output_path` is the filesystem path to the simulator working directory.
-           Please note that `simulator_output_path` is shared by all test runs. The user must take
-           care that test runs do not read or write the same files asynchronously. It is therefore
-           recommended to use `output_path` in favor of `simulator_output_path`.
-           The function must return `True` or the test will fail
-        :param post_check: A function to be called after test execution, replaces the default if not None
-           The function must accept a string which is the filesystem path to the
-           directory where test outputs are stored.
-           The function must return `True` or the test will fail
+        :param pre_config: A :ref:`callback function <pre_and_post_hooks>` to be called before test execution.
+        :param post_check: A :ref:`callback function <pre_and_post_hooks>` to be called after test execution.
         :param sim_options: A `dict` containing the sim_options to be set in addition to the default configuration
 
         :example:
@@ -1478,8 +1446,7 @@ class PackageFacade(object):
         codec_generator.generate_codecs(self._design_unit,
                                         codec_package_name,
                                         used_packages,
-                                        output_file_name,
-                                        self._parent.use_debug_codecs)
+                                        output_file_name)
 
         return self._parent.add_source_files(output_file_name, self._library_name)
 
@@ -1510,14 +1477,8 @@ class Test(object):
         :param name: The name of the configuration. Will be added as a suffix on the test name
         :param generics: A `dict` containing the generics to be set in addition to the default configuration.
         :param parameters: A `dict` containing the parameters to be set in addition to the default configuration.
-        :param pre_config: A function to be called before test execution, replaces the default if not None.
-           The function may accept a string which is the filesystem path to the
-           directory where test outputs are stored.
-           The function must return `True` or the test will fail
-        :param post_check: A function to be called after test execution, replaces the default if not None.
-           The function must accept a string which is the filesystem path to the
-           directory where test outputs are stored.
-           The function must return `True` or the test will fail
+        :param pre_config: A :ref:`callback function <pre_and_post_hooks>` to be called before test execution.
+        :param post_check: A :ref:`callback function <pre_and_post_hooks>` to be called after test execution.
         :param sim_options: A `dict` containing the sim_options to be set in addition to the default configuration.
 
         :example:
@@ -1603,7 +1564,7 @@ class Test(object):
 
     def set_pre_config(self, value):
         """
-        Set pre_config function of all |configurations| of this test
+        Set :ref:`pre_config <pre_and_post_hooks>` function of all |configurations| of this test
 
         :param value: The pre_config function
         """
@@ -1611,7 +1572,7 @@ class Test(object):
 
     def set_post_check(self, value):
         """
-        Set post_check function of all |configurations| of this test
+        Set :ref:`post_check <pre_and_post_hooks>` function of all |configurations| of this test
 
         :param value: The post_check function
         """

@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2015-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 """
 Test of the Verilog parser
@@ -173,6 +173,23 @@ endmodule
         self.assertEqual(instances[0], "true1")
         self.assertEqual(instances[1], "true2")
         self.assertEqual(instances[2], "true3")
+
+    def test_parse_instances_after_block_label(self):
+        instances = self.parse("""\
+module name;
+genvar i;
+  generate
+    for( i=0; i < 10; i = i + 1 )
+      begin: INST_GEN
+        true1 instance_name1();
+    end : INST_GEN
+    true2 instance_name2();
+  endgenerate
+endmodule
+""").instances
+        self.assertEqual(len(instances), 2)
+        self.assertEqual(instances[0], "true1")
+        self.assertEqual(instances[1], "true2")
 
     def test_parse_instances_without_crashing(self):
         instances = self.parse("""\

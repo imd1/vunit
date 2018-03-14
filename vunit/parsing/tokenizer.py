@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2015-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 """
 A general tokenizer
@@ -72,8 +72,7 @@ class Tokenizer(object):
                 break
             lexpos = (start, match.end() - 1)
             start = match.end()
-            key = match.lastgroup
-            kind, func = self._assoc[key]
+            kind, func = self._assoc[match.lastgroup]
             value = match.group(match.lastgroup)
 
             if create_locations:
@@ -207,6 +206,7 @@ def describe_location(location, first=True):
             return retval
 
         count = lend + 1
+    return retval
 
 
 class EOFException(Exception):

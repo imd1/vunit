@@ -83,11 +83,9 @@ class IncisiveInterface(SimulatorInterface):  # pylint: disable=too-many-instanc
 
     def __init__(self,  # pylint: disable=too-many-arguments
                  prefix, output_path, gui=False, log_level=None, cdslib=None, hdlvar=None):
-        SimulatorInterface.__init__(self)
+        SimulatorInterface.__init__(self, output_path, gui)
         self._prefix = prefix
         self._libraries = []
-        self._output_path = output_path
-        self._gui = gui
         self._log_level = log_level
         if cdslib is None:
             self._cdslib = abspath(join(output_path, 'cds.lib'))
@@ -170,8 +168,7 @@ define work "{2}/libraries/work"
             return "-v200x -extv200x"
         elif vhdl_standard == "93":
             return "-v93"
-        else:
-            assert False
+        raise ValueError("Invalid VHDL standard %s" % vhdl_standard)
 
     def compile_vhdl_file_command(self, source_file):
         """
@@ -322,12 +319,12 @@ define work "{2}/libraries/work"
                 args += ['-input "@run"']
                 # Try hierarchical path formats for both VHDL and Verilog, but don't throw an error if not found.
                 # args += ['-input "@catch {puts #vunit_pkg::__runner__.exit_without_errors}"']
-                # args += ['-input "@catch {puts #run_base_pkg.runner.exit_without_errors}"']
+                # args += ['-input "@catch {puts #run_pkg.runner.exit_without_errors}"']
                 # NOTE: do not exit with 1 or 2 in case of error, that seems to mean something special to Incisive:
                 args += ['-input "@catch '
                          '{if {#vunit_pkg::__runner__.exit_without_errors == 1} {exit 0} else {exit 42}}"']
                 args += ['-input "@catch '
-                         '{if {#run_base_pkg.runner.exit_without_errors == \\"TRUE\\"} {exit 0} else {exit 42}}"']
+                         '{if {#run_pkg.runner(1) == 1} {exit 0} else {exit 42}}"']
             if config.architecture_name is None:
                 # we have a SystemVerilog toplevel:
                 args += ['-top %s' % join('%s.%s:sv' % (config.library_name, config.entity_name))]

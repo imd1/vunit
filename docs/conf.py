@@ -188,7 +188,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'VUnit'
-copyright = u'2017, Lars Asplund'
+copyright = u'2014-2018, Lars Asplund'
 author = u'lasplund'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -263,6 +263,7 @@ html_theme_options = {
     'logo': 'VUnit_logo_420x420.png',
     'logo_name': True,
     'travis_button':True,
+    'page_width':'75%',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

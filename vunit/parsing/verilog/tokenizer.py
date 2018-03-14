@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2015-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 # pylint: disable=unused-wildcard-import
 # pylint: disable=wildcard-import
@@ -84,6 +84,10 @@ class VerilogTokenizer(object):
             r"::",
             remove_value)
 
+        add(COLON,
+            r":",
+            remove_value)
+
         add(SEMI_COLON,
             r";",
             remove_value)
@@ -102,6 +106,22 @@ class VerilogTokenizer(object):
 
         add(RPAR,
             r"\)",
+            remove_value)
+
+        add(LBRACKET,
+            r"\[",
+            remove_value)
+
+        add(RBRACKET,
+            r"\]",
+            remove_value)
+
+        add(LBRACE,
+            r"{",
+            remove_value)
+
+        add(RBRACE,
+            r"}",
             remove_value)
 
         add(COMMA,

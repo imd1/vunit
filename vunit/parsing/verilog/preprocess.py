@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2015-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 # pylint: disable=unused-wildcard-import
 # pylint: disable=wildcard-import
@@ -156,8 +156,7 @@ class VerilogPreprocessor(object):
                 return arg.value in defines
             elif if_token.value == "ifndef":
                 return arg.value not in defines
-            else:
-                assert False
+            raise ValueError("Invalid if token %r" % if_token.value)
 
         result = []
         stream.skip_while(WHITESPACE)
@@ -450,8 +449,31 @@ class Macro(object):
         token = stream.pop()
         value = []
         values = []
-        while token.kind != RPAR:
-            if token.kind == COMMA:
+
+        bracket_count = 0
+        brace_count = 0
+        par_count = 0
+
+        while not (token.kind == RPAR and par_count == 0):
+            if token.kind is LBRACKET:
+                bracket_count += 1
+            elif token.kind is RBRACKET:
+                bracket_count += -1
+            elif token.kind is LBRACE:
+                brace_count += 1
+            elif token.kind is RBRACE:
+                brace_count += -1
+            elif token.kind is LPAR:
+                par_count += 1
+            elif token.kind is RPAR:
+                par_count += -1
+
+            value_ok = (token.kind == COMMA and
+                        bracket_count == 0 and
+                        brace_count == 0 and
+                        par_count == 0)
+
+            if value_ok:
                 values.append(value)
                 value = []
             else:

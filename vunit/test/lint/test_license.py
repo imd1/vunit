@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
+# Copyright (c) 2015-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 """
 License header sanity check
@@ -10,7 +10,7 @@ License header sanity check
 from __future__ import print_function
 
 import unittest
-from os.path import join, splitext, abspath, commonprefix
+from os.path import join, splitext, abspath, commonprefix, dirname
 from os import walk
 import re
 from datetime import datetime
@@ -87,14 +87,14 @@ class TestLicense(unittest.TestCase):
             for _ in range(len(line) - len(sline)):
                 print("~", end="")
             print()
-            raise AssertionError("Line %i of %s contains trailing whitespace", idx + 1, file_name)
+            raise AssertionError("Line %i of %s contains trailing whitespace" % (idx + 1, file_name))
 
 
 def find_expected_license_years_of(file_name):
     """
     Use git history to find expected license years of file_name
     """
-    proc = Popen(['git', 'log', '--follow', '--date=short', file_name],
+    proc = Popen(['git', 'log', '--follow', '--date=short', file_name], cwd=dirname(file_name),
                  bufsize=0, stdout=PIPE, stdin=PIPE, stderr=STDOUT, universal_newlines=True)
     out, _ = proc.communicate()
     first_year = None
@@ -150,10 +150,6 @@ def find_licensed_files():
                 continue
             osvvm_directory = abspath(join(VHDL_PATH, 'osvvm'))
             if is_prefix_of(osvvm_directory, abspath(join(root, file_name))):
-                continue
-            osvvm_integration_example_directory = abspath(
-                join(ROOT, 'examples', 'vhdl', 'osvvm_integration', 'src'))
-            if is_prefix_of(osvvm_integration_example_directory, abspath(join(root, file_name))):
                 continue
             if splitext(file_name)[1] in ('.vhd', '.vhdl', '.py', '.v', '.sv'):
                 licensed_files.append(join(root, file_name))

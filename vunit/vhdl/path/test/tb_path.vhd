@@ -2,14 +2,12 @@
 -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
 -- You can obtain one at http://mozilla.org/MPL/2.0/.
 --
--- Copyright (c) 2014-2016, Lars Asplund lars.anders.asplund@gmail.com
+-- Copyright (c) 2014-2018, Lars Asplund lars.anders.asplund@gmail.com
 
 library vunit_lib;
 use vunit_lib.run_pkg.all;
-use vunit_lib.run_base_pkg.all;
 use vunit_lib.run_types_pkg.all;
 use vunit_lib.check_pkg.all;
-use vunit_lib.log_types_pkg.all;
 use vunit_lib.path.all;
 
 entity tb_path is

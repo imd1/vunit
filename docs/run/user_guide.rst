@@ -409,10 +409,16 @@ Note that the problem with the first test case doesn't prevent the second from r
 
     > python run.py *watchdog*
     Starting lib.tb_with_watchdog.Test that stalls
-    ERROR: Test runner timeout after 10000000000000 fs.
-    D:\Programming\github\vunit\vunit\vhdl\vhdl\src\lang\lang.vhd:27:7:@10ms:(report failure):
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: report failed
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: simulation failed
+      10000000000000 fs - runner -   ERROR - Test runner timeout after 10000000000000 fs.
+    D:\Programming\github\vunit\vunit\vhdl\core\src\core_pkg.vhd:84:7:@10ms:(report failure): Stop simulation on log level error
+    C:\ghdl\dev\bin\ghdl.exe:error: report failed
+      from: vunit_lib.core_pkg.core_failure at core_pkg.vhd:84
+      from: vunit_lib.logger_pkg.count_log at logger_pkg-body.vhd:563
+      from: vunit_lib.logger_pkg.log at logger_pkg-body.vhd:711
+      from: vunit_lib.logger_pkg.error at logger_pkg-body.vhd:752
+      from: vunit_lib.run_pkg.test_runner_watchdog at run.vhd:368
+      from: process lib.tb_with_watchdog(tb).P0 at tb_with_watchdog.vhd:25
+    C:\ghdl\dev\bin\ghdl.exe:error: simulation failed
     fail (P=0 S=0 F=1 T=2) lib.tb_with_watchdog.Test that stalls (0.3 seconds)
 
     Starting lib.tb_with_watchdog.Test to_string for boolean
@@ -425,10 +431,10 @@ Note that the problem with the first test case doesn't prevent the second from r
     pass 1 of 2
     fail 1 of 2
     ========================================================================
-    Total time was 0.6 seconds
-    Elapsed time was 0.6 seconds
+    Total time was 0.5 seconds
+    Elapsed time was 0.5 seconds
     ========================================================================
-    Some failed!
+
 
 What Makes a Test Fail?
 -----------------------
@@ -466,23 +472,30 @@ All these test cases will fail
 
     > python run.py *ways*
     Starting lib.tb_many_ways_to_fail.Test that fails on an assert
-    D:\Programming\github\vunit\examples\vhdl\run\tb_many_ways_to_fail.vhd:17:9:@0ms:(assertion error):
-    Assertion violation
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: assertion failed
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: simulation failed
+    d:\Programming\github\vunit\examples\vhdl\run\tb_many_ways_to_fail.vhd:17:9:@0ms:(assertion error): Assertion violation
+    C:\ghdl\dev\bin\ghdl.exe:error: assertion failed
+      from: process lib.tb_many_ways_to_fail(tb).test_runner at tb_many_ways_to_fail.vhd:17
+    C:\ghdl\dev\bin\ghdl.exe:error: simulation failed
     fail (P=0 S=0 F=1 T=3) lib.tb_many_ways_to_fail.Test that fails on an assert (0.3 seconds)
 
     Starting lib.tb_many_ways_to_fail.Test that crashes on boundary problems
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: bound check failure at D:\Programming\github\vunit\examples\vhdl\run\
-    tb_many_ways_to_fail.vhd:19
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: simulation failed
+    C:\ghdl\dev\bin\ghdl.exe:error: bound check failure at d:\Programming\github\vunit\examples\vhdl\run\tb_many_ways_to_fail.vhd:19
+      from: process lib.tb_many_ways_to_fail(tb).test_runner at tb_many_ways_to_fail.vhd:19
+    C:\ghdl\dev\bin\ghdl.exe:error: simulation failed
     fail (P=0 S=0 F=2 T=3) lib.tb_many_ways_to_fail.Test that crashes on boundary problems (0.3 seconds)
 
     Starting lib.tb_many_ways_to_fail.Test that fails on VUnit check procedure
-    ERROR: Equality check failed - Got 17. Expected 18.
-    D:\Programming\github\vunit\vunit\vhdl\vhdl\src\lang\lang.vhd:27:7:@0ms:(report failure):
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: report failed
-    c:\ghdl\ghdl-0.33\bin\ghdl.exe:error: simulation failed
+                   0 fs - check                -   ERROR - Equality check failed - Got 17. Expected 18.
+    D:\Programming\github\vunit\vunit\vhdl\core\src\core_pkg.vhd:84:7:@0ms:(report failure): Stop simulation on log level error
+    C:\ghdl\dev\bin\ghdl.exe:error: report failed
+      from: vunit_lib.core_pkg.core_failure at core_pkg.vhd:84
+      from: vunit_lib.logger_pkg.count_log at logger_pkg-body.vhd:563
+      from: vunit_lib.logger_pkg.log at logger_pkg-body.vhd:711
+      from: vunit_lib.checker_pkg.failing_check at checker_pkg.vhd:238
+      from: vunit_lib.check_pkg.check_equal at check.vhd:3544
+      from: vunit_lib.check_pkg.check_equal at check.vhd:3501
+      from: process lib.tb_many_ways_to_fail(tb).test_runner at tb_many_ways_to_fail.vhd:21
+    C:\ghdl\dev\bin\ghdl.exe:error: simulation failed
     fail (P=0 S=0 F=3 T=3) lib.tb_many_ways_to_fail.Test that fails on VUnit check procedure (0.3 seconds)
 
     ==== Summary =============================================================================
@@ -493,24 +506,30 @@ All these test cases will fail
     pass 0 of 3
     fail 3 of 3
     ==========================================================================================
-    Total time was 0.9 seconds
-    Elapsed time was 0.9 seconds
+    Total time was 0.8 seconds
+    Elapsed time was 0.8 seconds
     ==========================================================================================
     Some failed!
 
-Counting Errors with VUnit Check Library
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Counting Errors with VUnit Logging/Check Libraries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you use the VUnit check library you can set the :doc:`stop_level <../check/user_guide>` such that the
-simulation continues on a check error. Such failing checks will be remembered and the test will fail despite
+If you use the VUnit check/logging library you can set the :doc:`stop_level <../logging/user_guide>` such that the
+simulation continues on an error. Such errors will be remembered and the test will fail despite
 reaching the ``test_runner_cleanup`` call.
+
+By default ``test_runner_cleanup`` will fail if there were any error
+or failure log even if they where disabled. Disabled errors or
+failures can be allowed using the ``allow_disabled_errors`` or
+``allow_disabled_failures`` flags. Warnings can also optionally cause
+failure by setting the ``fail_on_warning`` flag.
 
 .. code-block:: vhdl
 
     test_runner : process
     begin
       test_runner_setup(runner, runner_cfg);
-      checker_init(stop_level => failure);
+      set_stop_level(failure);
 
       while test_suite loop
         if run("Test that fails multiple times but doesn't stop") then
@@ -525,63 +544,23 @@ reaching the ``test_runner_cleanup`` call.
 .. code-block:: console
 
     > python run.py *count*
-    Compiling tb_counting_errors.vhd into lib ...
     Starting lib.tb_counting_errors.Test that fails multiple times but doesn't stop
-    ERROR: Equality check failed - Got 17. Expected 18.
-    ERROR: Equality check failed - Got 17. Expected 19.
-    simulation stopped @0ms with status 1
-    fail (P=0 S=0 F=1 T=1) lib.tb_counting_errors.Test that fails multiple times but doesn't stop (1.1 seconds)
+                   0 fs - check                -   ERROR - Equality check failed - Got 17. Expected 18.
+                   0 fs - check                -   ERROR - Equality check failed - Got 17. Expected 19.
+    FAILURE - Logger check has 2 errors
+    fail (P=0 S=0 F=1 T=1) lib.tb_counting_errors.Test that fails multiple times but doesn't stop (0.3 seconds)
 
     ==== Summary ==================================================================================
-    fail lib.tb_counting_errors.Test that fails multiple times but doesn't stop (1.1 seconds)
+    fail lib.tb_counting_errors.Test that fails multiple times but doesn't stop (0.3 seconds)
     ===============================================================================================
     pass 0 of 1
     fail 1 of 1
     ===============================================================================================
-    Total time was 1.1 seconds
-    Elapsed time was 1.1 seconds
+    Total time was 0.3 seconds
+    Elapsed time was 0.3 seconds
     ===============================================================================================
     Some failed!
 
-Foreign Error Mechanisms
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you have some other error handling mechanism that doesn't stop on error you can still make a test fail as
-long as you can provide the error state to the ``test_runner_cleanup`` procedure as a boolean value.
-
-.. code-block:: vhdl
-
-    test_runner : process
-      variable error_counter : natural := 0;
-    begin
-      test_runner_setup(runner, runner_cfg);
-
-      while test_suite loop
-        if run("Test that fails on other mechanism") then
-          error_counter := error_counter + 1;
-        end if;
-      end loop;
-
-      test_runner_cleanup(runner, error_counter > 0);
-    end process;
-
-.. code-block:: console
-
-    > python run.py *mech*
-    Starting lib.tb_other_error_mechanism.Test that fails on other mechanism
-    simulation stopped @0ms with status 1
-    fail (P=0 S=0 F=1 T=1) lib.tb_other_error_mechanism.Test that fails on other mechanism (1.1 seconds)
-
-    ==== Summary ===========================================================================
-    fail lib.tb_other_error_mechanism.Test that fails on other mechanism (1.1 seconds)
-    ========================================================================================
-    pass 0 of 1
-    fail 1 of 1
-    ========================================================================================
-    Total time was 1.1 seconds
-    Elapsed time was 1.1 seconds
-    ========================================================================================
-    Some failed!
 
 Running A VUnit Testbench Standalone
 ------------------------------------
@@ -603,11 +582,8 @@ value ``runner_cfg_default`` which will cause all test cases to be run.
     architecture tb of tb_standalone is
     begin
       test_runner : process
-        variable filter : log_filter_t;
       begin
         test_runner_setup(runner, runner_cfg);
-        logger_init(runner_trace_logger);
-        pass_level(runner_trace_logger, info, display_handler, filter);
 
         while test_suite loop
           if run("Test that fails on VUnit check procedure") then
@@ -638,20 +614,16 @@ Without PR there is a need print the test result. VUnit provides the ``get_check
 internal error counters and a ``to_string`` function to convert the returned record to a string. The example
 uses that and VUnit logging capabilities to create a simple summary in the test suite cleanup phase.
 
-It's also useful to print the currently running test case. This can be done by enabling the ``runner_trace_logger``
-internal to VR. The logger also outputs debug information so in this example I've added a
-filter to only pass ``info`` level log messages. The result of a run within the simulator will look something
-like this:
+It's also useful to print the currently running test case. VR has an internal logger, ``runner``, providing
+such information. This information is suppressed when running with PR but is enabled in the standalone mode
 
 .. code-block:: text
 
-    # Test case: Test that fails on VUnit check procedure
-    # ERROR: Equality check failed - Got 17. Expected 18.
-    # Test case: Test to_string for boolean
-    # ===Summary===
-    # Checks: 2
-    # Passed: 1
-    # Failed: 1
+    #             0 ps - runner  -    INFO  - Test case: Test that fails on VUnit check procedure
+    #             0 ps - check   -    ERROR - Equality check failed - Got 17. Expected 18.
+    #             0 ps - runner  -    INFO  - Test case: Test to_string for boolean
+    #             0 ps - default -    INFO  - ===Summary===
+    #                                         checker_stat'(n_checks => 2, n_failed => 1, n_passed => 1)
 
 Note that VUnit cannot handle VHDL asserts in this mode of operation. We will have to wait for VHDL-2017 to get
 the ability to read error counters based on assert statements. Failures like division by zero or out of range
@@ -697,9 +669,9 @@ will reveal that
     Running 1 tests
 
     Starting lib.tb_magic_paths.all
-    Directory containing testbench: D:/Programming/github/vunit/examples/vhdl/run/
-    Test output directory: D:/Programming/github/vunit/examples/vhdl/run/vunit_out/test_output/
-    243b3c717ce1d4e82490245d1b7e8fe8797f5e94/
+                   0 fs - default              -    INFO - Directory containing testbench: d:/Programming/github/vunit/examples/vhdl/run/
+                   0 fs - default              -    INFO - Test output directory: d:/Programming/github/vunit/examples/vhdl/run/vunit_out/test_output/lib.tb_magic_paths.all_243b3c717ce1d4e82490245d1b7e8fe8797f5e94/
+
 
 Note On Undocumented Features
 -----------------------------

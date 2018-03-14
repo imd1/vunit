@@ -28,7 +28,7 @@ class IndependentSimTestCase(object):
         if test_case is not None:
             self._name += "." + test_case
         elif config.is_default:
-            # JUnit XML test reports wants three dotted name hiearchies
+            # JUnit XML test reports wants three dotted name hierarchies
             self._name += ".all"
 
         self._test_case = test_case
@@ -45,11 +45,11 @@ class IndependentSimTestCase(object):
         Run the test case using the output_path
         """
         if not call_pre_config(self._config.pre_config, output_path,
-                               self._simulator_if.get_output_path()):
+                               self._simulator_if.output_path):
             return False
 
         enabled_test_cases = [self._test_case]
-        config = _add_runner_cfg(self._config, output_path, enabled_test_cases)
+        config = _add_runner_cfg(self._simulator_if, self._config, output_path, enabled_test_cases)
         sim_ok = self._simulator_if.simulate(join(output_path, self._simulator_if.name),
                                              self._name,
                                              config,
@@ -120,11 +120,11 @@ class SameSimTestSuite(object):
         Run the test suite using output_path
         """
         if not call_pre_config(self._config.pre_config, output_path,
-                               self._simulator_if.get_output_path()):
+                               self._simulator_if.output_path):
             return False
 
-        enabled_test_cases = [encode_test_case(test_case) for test_case in self._test_cases]
-        config = _add_runner_cfg(self._config, output_path, enabled_test_cases)
+        enabled_test_cases = [test_case for test_case in self._test_cases]
+        config = _add_runner_cfg(self._simulator_if, self._config, output_path, enabled_test_cases)
         sim_ok = self._simulator_if.simulate(join(output_path, self._simulator_if.name),
                                              self._name,
                                              config,
@@ -191,7 +191,7 @@ class SameSimTestSuite(object):
         return retval
 
 
-def _add_runner_cfg(config, output_path, enabled_test_cases):
+def _add_runner_cfg(simulator_if, config, output_path, enabled_test_cases):
     """
     Return a new Configuration object with runner_cfg, output path and tb path information set
     """
@@ -204,6 +204,7 @@ def _add_runner_cfg(config, output_path, enabled_test_cases):
         "enabled_test_cases": ",".join(encode_test_case(test_case)
                                        for test_case in enabled_test_cases
                                        if test_case is not None),
+        "use_color": simulator_if.use_color,
         "output path": output_path.replace("\\", "/") + "/",
         "active python runner": True,
         "tb path": config.tb_path.replace("\\", "/") + "/",
@@ -254,13 +255,15 @@ def call_pre_config(pre_config, output_path, simulator_output_path):
     """
     if pre_config is not None:
         args = inspect.getargspec(pre_config).args  # pylint: disable=deprecated-method
-        if args == ["output_path", "simulator_output_path"]:
-            if not pre_config(output_path, simulator_output_path):
-                return False
-        elif "output_path" in args:
-            if not pre_config(output_path):
-                return False
-        else:
-            if not pre_config():
-                return False
+
+        kwargs = {"output_path": output_path,
+                  "simulator_output_path": simulator_output_path}
+
+        for argname in list(kwargs.keys()):
+            if argname not in args:
+                del kwargs[argname]
+
+        if not pre_config(**kwargs):
+            return False
+
     return True
