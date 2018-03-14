@@ -4,6 +4,8 @@
 //
 // Copyright (c) 2015-2016, Lars Asplund lars.anders.asplund@gmail.com
 
+`timescale 1ns/1ps
+
 package vunit_pkg;
 
 class test_runner;
