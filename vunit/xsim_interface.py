@@ -29,6 +29,9 @@ class XSimInterface(SimulatorInterface):
     package_users_depend_on_bodies = True
     supports_gui_flag = True
 
+    def _has_output_flag(self):
+        return False
+
     @classmethod
     def from_args(cls,
                   output_path,  # pylint: disable=unused-argument
@@ -37,7 +40,7 @@ class XSimInterface(SimulatorInterface):
         Create instance from args namespace
         """
         prefix = cls.find_prefix()
-        return cls(prefix=prefix, gui=args.gui)
+        return cls(prefix=prefix, output_path=output_path, gui=args.gui)
 
     @classmethod
     def find_prefix_from_path(cls):
@@ -46,7 +49,8 @@ class XSimInterface(SimulatorInterface):
         """
         return cls.find_toolchain(["xsim"])
 
-    def __init__(self, prefix, gui=False):
+    def __init__(self, prefix, output_path, gui=False):
+        SimulatorInterface.__init__(self, output_path, gui)
         self._gui = gui
         self._prefix = prefix
         self._libraries = {}
@@ -65,6 +69,7 @@ class XSimInterface(SimulatorInterface):
         """
         Returns the command to compile a single source_file
         """
+
         if source_file.file_type == 'vhdl':
             return self.compile_vhdl_file_command(source_file)
         elif source_file.file_type == 'verilog':
@@ -82,7 +87,7 @@ class XSimInterface(SimulatorInterface):
         """
         Returns the command to compile a vhdl file
         """
-        cmd = [join(self._prefix, 'xvhdl.bat'), source_file.name]
+        cmd = [join(self._prefix, 'xvhdl.bat'), "--2008", source_file.name]
         #cmd += ["--work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
         for library_name, library_path in self._libraries.items():
             if (os.path.isdir(library_path + '\\work') and os.listdir(library_path + '\\work')):
