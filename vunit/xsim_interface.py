@@ -94,7 +94,7 @@ class XSimInterface(SimulatorInterface):
         """
         Returns the command to compile a vhdl file
         """
-        cmd = [join(self._prefix, self._xvhdl), source_file.name]
+        cmd = [join(self._prefix, self._xvhdl), source_file.name, '-2008']
         #cmd += ["--work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
         for library_name, library_path in self._libraries.items():
             path = os.path.join(library_path, 'work')
