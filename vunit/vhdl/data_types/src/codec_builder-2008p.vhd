@@ -17,6 +17,7 @@ use ieee.float_pkg.all;
 use std.textio.all;
 
 use work.codec_builder_pkg.all;
+use work.check_pkg.all;
 
 package codec_builder_2008p_pkg is
   procedure decode (
