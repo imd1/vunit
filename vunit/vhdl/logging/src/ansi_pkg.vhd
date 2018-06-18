@@ -7,7 +7,7 @@
 use std.textio.all;
 
 library vunit_lib;
-use vunit_lib.string_ptr_pkg.all;
+use work.string_ptr_pkg.all;
 
 package ansi_pkg is
 
