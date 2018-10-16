@@ -99,7 +99,7 @@ class XSimInterface(SimulatorInterface):
         for library_name, library_path in self._libraries.items():
             path = os.path.join(library_path, 'work')
             if (os.path.isdir(path) and os.listdir(path)):
-                cmd += ["-L", '"%s=%s"' % (library_name, path)]
+                cmd += ["-L", '%s=%s' % (library_name, path)]
         return {'cmd' : cmd, 'workdir' : source_file.library.directory}
 
     def compile_verilog_file_command(self, source_file, cmd):
@@ -113,12 +113,12 @@ class XSimInterface(SimulatorInterface):
         for library_name, library_path in self._libraries.items():
             path = os.path.join(library_path, 'work')
             if (os.path.isdir(path) and os.listdir(path)):
-                cmd += ["-L", '"%s=%s"' % (library_name, path)]
+                cmd += ["-L", '%s=%s' % (library_name, path)]
         for include_dir in source_file.include_dirs:
             cmd += ["--include", "%s" % include_dir]
         for define_name, define_val in source_file.defines:
             cmd += ["--define", "%s=%s" % (define_name, define_val)]
-        return {'cmd' : ' '.join(cmd), 'workdir' : source_file.library.directory}
+        return {'cmd' : cmd, 'workdir' : source_file.library.directory}
 
     def simulate(self,
                  output_path, test_suite_name, config, elaborate_only):
@@ -130,18 +130,18 @@ class XSimInterface(SimulatorInterface):
         cmd += ["-debug", "typical"]
         for library_name, library_path in self._libraries.items():
             path = os.path.join(library_path, 'work')
-            cmd += ["-L", '"%s=%s"' % (library_name, path)]
+            cmd += ["-L", '%s=%s' % (library_name, path)]
         if not (elaborate_only or self._gui):
             cmd += ["--runall"]
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
         shutil.copytree(os.path.dirname(self._libraries[config.library_name]), output_path)
         for generic_name, generic_value in config.generics.items():
-            cmd += ["--generic_top", '"%s=%s"' % (generic_name, generic_value)]
+            cmd += ["--generic_top", '%s=%s' % (generic_name, generic_value)]
         if not os.path.exists(output_path):
             os.makedirs(output_path)
         status = True
         try:
-            proc = Process(' '.join(cmd), cwd=output_path)
+            proc = Process(cmd, cwd=output_path)
             proc.consume_output()
         except Process.NonZeroExitCode:
             status = False
