@@ -37,7 +37,7 @@ class XSimInterface(SimulatorInterface):
         Create instance from args namespace
         """
         prefix = cls.find_prefix()
-        return cls(prefix=prefix, gui=args.gui)
+        return cls(prefix=prefix, output_path=output_path, gui=args.gui)
 
     @classmethod
     def find_prefix_from_path(cls):
@@ -53,8 +53,8 @@ class XSimInterface(SimulatorInterface):
             return tool_name
         raise Exception('Cannot find %s' % tool_name)
 
-    def __init__(self, prefix, gui=False):
-        self._gui = gui
+    def __init__(self, prefix, output_path, gui=False):
+        super(XSimInterface, self).__init__(output_path, gui)
         self._prefix = prefix
         self._libraries = {}
         self._xvlog = self.check_tool('xvlog')
