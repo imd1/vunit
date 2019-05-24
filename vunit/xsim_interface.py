@@ -134,7 +134,8 @@ class XSimInterface(SimulatorInterface):
         if not (elaborate_only or self._gui):
             cmd += ["--runall"]
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
-        shutil.copytree(os.path.dirname(self._libraries[config.library_name]), output_path)
+        dirname=os.path.dirname(self._libraries[config.library_name])
+        shutil.copytree(dirname, os.path.join(output_path, os.path.basename(dirname)))
         for generic_name, generic_value in config.generics.items():
             cmd += ["--generic_top", '%s=%s' % (generic_name, generic_value)]
         if not os.path.exists(output_path):
