@@ -4,6 +4,8 @@
 //
 // Copyright (c) 2014-2019, Lars Asplund lars.anders.asplund@gmail.com
 
+`timescale 1ns/1ps
+
 // You do not need to worry about adding vunit_defines.svh to your
 // include path, VUnit will automatically do that for you if VUnit is
 // correctly installed (and your python run-script is correct).
