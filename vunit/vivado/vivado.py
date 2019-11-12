@@ -32,7 +32,8 @@ def add_from_compile_order_file(
     no_dependency_scan = []
     with_dependency_scan = []
     for library_name, file_name in compile_order:
-        is_verilog = file_name.endswith(".v") or file_name.endswith(".vp")
+        is_verilog = file_name.endswith(".v") or file_name.endswith(".vp") or \
+                     file_name.endswith("sv")
 
         # Optionally use VUnit dependency scanning for everything in xil_defaultlib, which
         # typically contains unencrypted top levels that instantiate encrypted implementations.
@@ -97,7 +98,7 @@ def _read_compile_order(file_name):
 
         for line in ifile.readlines():
             library_name, file_type, file_name = line.strip().split(",", 2)
-            assert file_type in ("Verilog", "VHDL", "Verilog Header")
+            assert file_type in ("Verilog", "VHDL", "Verilog Header", "SystemVerilog")
             libraries.add(library_name)
 
             # Vivado generates duplicate files for different IP:s
