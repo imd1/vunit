@@ -96,6 +96,8 @@ class XSimInterface(SimulatorInterface):
             path = os.path.join(library_path, 'work')
             if (os.path.isdir(path) and os.listdir(path)):
                 cmd += ["-L", '%s=%s' % (library_name, path)]
+            else:
+                cmd += ["-L", library_name]
         return cmd
 
     def compile_vhdl_file_command(self, source_file):
