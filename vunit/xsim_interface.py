@@ -90,16 +90,21 @@ class XSimInterface(SimulatorInterface):
         LOGGER.error("Unknown file type: %s", source_file.file_type)
         raise CompileError
 
+    def libraries_command(self):
+        cmd = []
+        for library_name, library_path in self._libraries.items():
+            path = os.path.join(library_path, 'work')
+            if (os.path.isdir(path) and os.listdir(path)):
+                cmd += ["-L", '%s=%s' % (library_name, path)]
+        return cmd
+
     def compile_vhdl_file_command(self, source_file):
         """
         Returns the command to compile a vhdl file
         """
         cmd = [join(self._prefix, self._xvhdl), source_file.name, '-2008']
         #cmd += ["--work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
-        for library_name, library_path in self._libraries.items():
-            path = os.path.join(library_path, 'work')
-            if (os.path.isdir(path) and os.listdir(path)):
-                cmd += ["-L", '%s=%s' % (library_name, path)]
+        cmd += self.libraries_command()
         return {'cmd' : cmd, 'workdir' : source_file.library.directory}
 
     def compile_verilog_file_command(self, source_file, cmd):
@@ -110,10 +115,7 @@ class XSimInterface(SimulatorInterface):
         if (os.path.isdir(path) and os.listdir(path)):
             pass  # TODO: to get nicer console printout when compiling
             #cmd += ["--work", "%s=%s" % (source_file.library.name, path)]
-        for library_name, library_path in self._libraries.items():
-            path = os.path.join(library_path, 'work')
-            if (os.path.isdir(path) and os.listdir(path)):
-                cmd += ["-L", '%s=%s' % (library_name, path)]
+        cmd += self.libraries_command()
         for include_dir in source_file.include_dirs:
             cmd += ["--include", "%s" % include_dir]
         for define_name, define_val in source_file.defines:
@@ -128,9 +130,7 @@ class XSimInterface(SimulatorInterface):
 
         cmd = [join(self._prefix, self._xelab)]
         cmd += ["-debug", "typical"]
-        for library_name, library_path in self._libraries.items():
-            path = os.path.join(library_path, 'work')
-            cmd += ["-L", '%s=%s' % (library_name, path)]
+        cmd += self.libraries_command()
         if not (elaborate_only or self._gui):
             cmd += ["--runall"]
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
