@@ -68,10 +68,13 @@ class XSimInterface(SimulatorInterface):
         """
 
         for library in project.get_libraries():
-            path = os.path.join(library.directory, 'xsim.dir')
-            if not exists(path):
-                os.makedirs(path)
-            self._libraries[library.name] = path
+            if library.directory:
+                path = os.path.join(library.directory, 'xsim.dir')
+                if not exists(path):
+                    os.makedirs(path)
+                self._libraries[library.name] = path
+            else:
+                self._libraries[library.name] = None
 
     def compile_source_file_command(self, source_file):
         """
@@ -93,8 +96,8 @@ class XSimInterface(SimulatorInterface):
     def libraries_command(self):
         cmd = []
         for library_name, library_path in self._libraries.items():
-            path = os.path.join(library_path, 'work')
-            if (os.path.isdir(path) and os.listdir(path)):
+            if library_path:
+                path = os.path.join(library_path, 'work')
                 cmd += ["-L", '%s=%s' % (library_name, path)]
             else:
                 cmd += ["-L", library_name]

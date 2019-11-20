@@ -85,10 +85,10 @@ class Project(object):  # pylint: disable=too-many-instance-attributes
         self._validate_new_library_name(logical_name)
 
         if is_external:
-            if not exists(directory):
+            if directory and not exists(directory):
                 raise ValueError("External library %r does not exist" % directory)
 
-            if not isdir(directory):
+            if directory and not isdir(directory):
                 raise ValueError(
                     "External library must be a directory. Got %r" % directory
                 )

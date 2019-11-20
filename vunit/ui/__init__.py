@@ -196,7 +196,7 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
 
         return VHDL.standard(vhdl_standard)
 
-    def add_external_library(self, library_name, path, vhdl_standard=None):
+    def add_external_library(self, library_name, path=None, vhdl_standard=None):
         """
         Add an externally compiled library as a black-box
 
@@ -214,9 +214,12 @@ class VUnit(  # pylint: disable=too-many-instance-attributes, too-many-public-me
 
         """
 
+        if path:
+            path = abspath(path)
+
         self._project.add_library(
             library_name,
-            abspath(path),
+            path,
             self._which_vhdl_standard(vhdl_standard),
             is_external=True,
         )
