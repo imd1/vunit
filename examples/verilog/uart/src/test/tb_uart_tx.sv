@@ -6,6 +6,8 @@
 
 `include "vunit_defines.svh"
 
+`timescale 1ns/1ps
+
 module tb_uart_tx;
    localparam integer baud_rate = 115200; // bits / s
    localparam integer clk_period = 20; // ns
