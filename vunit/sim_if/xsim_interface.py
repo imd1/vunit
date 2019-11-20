@@ -123,7 +123,7 @@ class XSimInterface(SimulatorInterface):
         cmd += self.libraries_command()
         for include_dir in source_file.include_dirs:
             cmd += ["--include", "%s" % include_dir]
-        for define_name, define_val in source_file.defines:
+        for define_name, define_val in source_file.defines.items():
             cmd += ["--define", "%s=%s" % (define_name, define_val)]
         return {'cmd' : cmd, 'workdir' : source_file.library.directory}
 
