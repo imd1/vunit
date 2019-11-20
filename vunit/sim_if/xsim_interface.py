@@ -13,9 +13,9 @@ import logging
 from os.path import exists, join
 import os, shutil
 import subprocess
-from vunit.ostools import Process
-from vunit.simulator_interface import SimulatorInterface
-from vunit.exceptions import CompileError
+from ..ostools import Process
+from . import SimulatorInterface
+from ..exceptions import CompileError
 LOGGER = logging.getLogger(__name__)
 
 
