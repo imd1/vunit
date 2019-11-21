@@ -68,13 +68,7 @@ class XSimInterface(SimulatorInterface):
         """
 
         for library in project.get_libraries():
-            if library.directory:
-                path = os.path.join(library.directory, 'xsim.dir')
-                if not exists(path):
-                    os.makedirs(path)
-                self._libraries[library.name] = path
-            else:
-                self._libraries[library.name] = None
+            self._libraries[library.name] = library.directory
 
     def compile_source_file_command(self, source_file):
         """
@@ -98,7 +92,7 @@ class XSimInterface(SimulatorInterface):
         for library_name, library_path in self._libraries.items():
             if library_path:
                 path = os.path.join(library_path, 'work')
-                cmd += ["-L", '%s=%s' % (library_name, path)]
+                cmd += ["-L", '%s=%s' % (library_name, library_path)]
             else:
                 cmd += ["-L", library_name]
         return cmd
@@ -108,24 +102,21 @@ class XSimInterface(SimulatorInterface):
         Returns the command to compile a vhdl file
         """
         cmd = [join(self._prefix, self._xvhdl), source_file.name, '-2008']
-        #cmd += ["--work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
+        cmd += ["-work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
         cmd += self.libraries_command()
-        return {'cmd' : cmd, 'workdir' : source_file.library.directory}
+        return cmd
 
     def compile_verilog_file_command(self, source_file, cmd):
         """
         Returns the command to compile a vhdl file
         """
-        path = os.path.join(source_file.library.directory, 'xsim.dir')
-        if (os.path.isdir(path) and os.listdir(path)):
-            pass  # TODO: to get nicer console printout when compiling
-            #cmd += ["--work", "%s=%s" % (source_file.library.name, path)]
+        cmd += ["-work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
         cmd += self.libraries_command()
         for include_dir in source_file.include_dirs:
             cmd += ["--include", "%s" % include_dir]
         for define_name, define_val in source_file.defines.items():
             cmd += ["--define", "%s=%s" % (define_name, define_val)]
-        return {'cmd' : cmd, 'workdir' : source_file.library.directory}
+        return cmd
 
     def simulate(self,
                  output_path, test_suite_name, config, elaborate_only):
