@@ -95,18 +95,21 @@ class XSimInterface(SimulatorInterface):
         cmd = []
         for library_name, library_path in self._libraries.items():
             if library_path:
-                path = os.path.join(library_path, 'work')
                 cmd += ["-L", '%s=%s' % (library_name, library_path)]
             else:
                 cmd += ["-L", library_name]
         return cmd
+
+    def work_library_argument(self, source_file):
+        return ["-work", "%s=%s" % (source_file.library.name,
+                                    source_file.library.directory)]
 
     def compile_vhdl_file_command(self, source_file):
         """
         Returns the command to compile a vhdl file
         """
         cmd = [join(self._prefix, self._xvhdl), source_file.name, '-2008']
-        cmd += ["-work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
+        cmd += self.work_library_argument(source_file)
         cmd += self.libraries_command()
         return cmd
 
@@ -114,7 +117,7 @@ class XSimInterface(SimulatorInterface):
         """
         Returns the command to compile a vhdl file
         """
-        cmd += ["-work", "%s=%s" % (source_file.library.name, source_file.library.directory)]
+        cmd += self.work_library_argument(source_file)
         cmd += self.libraries_command()
         for include_dir in source_file.include_dirs:
             cmd += ["--include", "%s" % include_dir]
