@@ -14,7 +14,7 @@ from os.path import exists, join
 import os, shutil
 import subprocess
 from ..ostools import Process
-from . import SimulatorInterface
+from . import SimulatorInterface, StringOption
 from ..exceptions import CompileError
 LOGGER = logging.getLogger(__name__)
 
@@ -28,6 +28,10 @@ class XSimInterface(SimulatorInterface):
 
     package_users_depend_on_bodies = True
     supports_gui_flag = True
+
+    sim_options = [
+        StringOption("xsim.timescale"),
+    ]
 
     @classmethod
     def from_args(cls,
@@ -130,6 +134,9 @@ class XSimInterface(SimulatorInterface):
         if not (elaborate_only or self._gui):
             cmd += ["--runall"]
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
+        timescale = config.sim_options.get(self.name + '.timescale', None)
+        if timescale:
+            cmd += ['-timescale', timescale]
         dirname=os.path.dirname(self._libraries[config.library_name])
         shutil.copytree(dirname, os.path.join(output_path, os.path.basename(dirname)))
         for generic_name, generic_value in config.generics.items():
