@@ -10,8 +10,9 @@ Interface for Vivado XSim simulator
 
 from __future__ import print_function
 import logging
-from os.path import exists, join
-import os, shutil
+from os.path import join
+import os
+import shutil
 import subprocess
 from ..ostools import Process
 from . import SimulatorInterface, StringOption
@@ -87,7 +88,6 @@ class XSimInterface(SimulatorInterface):
             cmd = [join(self._prefix, self._xvlog), '--sv', source_file.name]
             return self.compile_verilog_file_command(source_file, cmd)
 
-
         LOGGER.error("Unknown file type: %s", source_file.file_type)
         raise CompileError
 
@@ -137,8 +137,9 @@ class XSimInterface(SimulatorInterface):
         timescale = config.sim_options.get(self.name + '.timescale', None)
         if timescale:
             cmd += ['-timescale', timescale]
-        dirname=os.path.dirname(self._libraries[config.library_name])
-        shutil.copytree(dirname, os.path.join(output_path, os.path.basename(dirname)))
+        dirname = os.path.dirname(self._libraries[config.library_name])
+        shutil.copytree(dirname, os.path.join(output_path,
+                                              os.path.basename(dirname)))
         for generic_name, generic_value in config.generics.items():
             cmd += ["--generic_top", '%s=%s' % (generic_name, generic_value)]
         if not os.path.exists(output_path):
@@ -151,11 +152,16 @@ class XSimInterface(SimulatorInterface):
             status = False
         if self._gui:
             tcl_file = os.path.join(output_path, "xsim_startup.tcl")
-            vivado_cmd = [join(self._prefix, self._vivado), "-mode", "gui", "-source", tcl_file]
+            vivado_cmd = [join(self._prefix, self._vivado),
+                          "-mode", "gui",
+                          "-source", tcl_file]
             if not os.path.isfile(tcl_file):
                 with open(tcl_file, 'w+') as xsim_startup_file:
                     xsim_startup_file.write("set_part xc7vx485tffg1157-1\n")
-                    xsim_startup_file.write("xsim " + ("%s.%s" % (config.library_name, config.entity_name)) + "\n")
+                    xsim_startup_file.write("xsim " +
+                                            ("%s.%s" % (config.library_name,
+                                                        config.entity_name)) +
+                                            "\n")
 
             print("out_path: " + str(output_path))
             print("vivado_cmd: " + str(vivado_cmd))
