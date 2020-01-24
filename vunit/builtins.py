@@ -248,7 +248,12 @@ in your VUnit Git repository? You have to do this first if installing using setu
         self._add_data_types(external=external)
         self._add_files(join(VHDL_PATH, "*.vhd"))
         if (simulator_is("xsim")):
-            libraries = ["xsim"]
+            libraries = ["xsim",
+                "string_ops",
+                "dictionary",
+                "core",
+                "run"
+            ]
         else:
             libraries = ["core",
                 "core",
