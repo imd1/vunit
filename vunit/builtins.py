@@ -11,7 +11,7 @@ Functions to add builtin VHDL code to a project for compilation
 from os.path import join, abspath, dirname, basename
 from glob import glob
 from vunit.vhdl_standard import VHDL
-from vunit.sim_if.common import simulator_check
+from vunit.sim_if.common import simulator_check, simulator_is
 
 VHDL_PATH = abspath(join(dirname(__file__), "vhdl"))
 VERILOG_PATH = abspath(join(dirname(__file__), "verilog"))
@@ -78,7 +78,10 @@ class Builtins(object):
                          {'string': <VAL>, 'integer': <VAL>}. Allowed values are: None, False/True or
                          ['path/to/custom/file'].
         """
-        self._add_files(join(VHDL_PATH, "data_types", "src", "*.vhd"))
+        if (simulator_is("xsim")):
+            self._add_files(join(VHDL_PATH, "xsim", "data_types", "src", "*.vhd"))
+        else:
+            self._add_files(join(VHDL_PATH, "data_types", "src", "*.vhd"))
 
         use_ext = {"string": False, "integer": False}
         files = {"string": None, "integer": None}
@@ -97,7 +100,10 @@ class Builtins(object):
                     "the selected simulator does not support VHPI; must use non-VHPI packages..."
                 )
 
-        ext_path = join(VHDL_PATH, "data_types", "src", "external")
+        if (simulator_is("xsim")):
+            ext_path = join(VHDL_PATH, "xsim", "data_types", "src", "external")
+        else:
+            ext_path = join(VHDL_PATH, "data_types", "src", "external")
 
         def default_files(cond, type_str):
             """
@@ -241,17 +247,23 @@ in your VUnit Git repository? You have to do this first if installing using setu
         """
         self._add_data_types(external=external)
         self._add_files(join(VHDL_PATH, "*.vhd"))
-        for path in (
-            "core",
-            "logging",
-            "string_ops",
-            "check",
-            "dictionary",
-            "run",
-            "path",
-        ):
-            self._add_files(join(VHDL_PATH, path, "src", "*.vhd"))
-
+        if (simulator_is("xsim")):
+            libraries = ["xsim"]
+        else:
+            libraries = ["core",
+                "core",
+                "logging",
+                "string_ops",
+                "check",
+                "dictionary",
+                "run",
+                "path",
+            ]
+        for path in (libraries):
+            if (simulator_is("xsim")):
+                self._add_files(join(VHDL_PATH, "xsim", path, "src", "*.vhd"))
+            else:
+                self._add_files(join(VHDL_PATH, path, "src", "*.vhd"))
 
 def osvvm_is_installed():
     """
