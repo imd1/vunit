@@ -15,6 +15,11 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 package run_pkg is
+  impure function run (
+    constant name : string)
+    return boolean;
+
+
   signal runner : runner_sync_t := (runner_event_idx => idle_runner,
                                     runner_exit_status_idx => runner_exit_with_errors,
                                     runner_timeout_update_idx => idle_runner,
@@ -133,7 +138,7 @@ package run_pkg is
   -- impure function active_python_runner (
   --   constant runner_cfg : string)
   --   return boolean;
-  
+
   impure function output_path (
     constant runner_cfg : string)
     return string;

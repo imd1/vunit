@@ -26,6 +26,7 @@ class XSimInterface(SimulatorInterface):
     """
 
     name = "xsim"
+    executable = os.environ.get("XSIM", "xsim")
 
     package_users_depend_on_bodies = True
     supports_gui_flag = True
@@ -47,7 +48,7 @@ class XSimInterface(SimulatorInterface):
     @classmethod
     def find_prefix_from_path(cls):
         """
-        Find first valid ghdl toolchain prefix
+        Find first valid xsim toolchain prefix
         """
         return cls.find_toolchain(["xsim"])
 
@@ -132,7 +133,7 @@ class XSimInterface(SimulatorInterface):
         """
 
         cmd = [join(self._prefix, self._xelab)]
-        cmd += ["-debug", "typical"]
+        cmd += ["-debug", "all"]
         cmd += self.libraries_command()
         if not (elaborate_only or self._gui):
             cmd += ["--runall"]
@@ -160,12 +161,11 @@ class XSimInterface(SimulatorInterface):
                           "-source", tcl_file]
             if not os.path.isfile(tcl_file):
                 with open(tcl_file, 'w+') as xsim_startup_file:
-                    xsim_startup_file.write("set_part xc7vx485tffg1157-1\n")
+                    xsim_startup_file.write("set_part xc7a12tcpg238-3\n")
                     xsim_startup_file.write("xsim " +
                                             ("%s.%s" % (config.library_name,
                                                         config.entity_name)) +
                                             "\n")
-
             print("out_path: " + str(output_path))
             print("vivado_cmd: " + str(vivado_cmd))
             try:

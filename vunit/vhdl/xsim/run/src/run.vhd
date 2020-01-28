@@ -17,6 +17,40 @@ use work.core_pkg;
 use std.textio.all;
 
 package body run_pkg is
+
+  impure function run (
+    constant name : string)
+    return boolean is
+  begin
+    core_pkg.test_start(name);
+    -- check_if_test(runner_cfg);
+    return true;
+    -- if get_test_suite_completed(runner_state) then
+    --   set_running_test_case(runner_state, "");
+    --   return false;
+    -- elsif get_run_all(runner_state) then
+    --   if not has_run(name) then
+    --     register_run(name);
+    --     info(runner_trace_logger, "Test case: " & name);
+    --     if has_active_python_runner(runner_state) then
+    --       core_pkg.test_start(name);
+    --     end if;
+    --     set_running_test_case(runner_state, name);
+    --     return true;
+    --   end if;
+    -- elsif get_test_case_name(runner_state, get_active_test_case_index(runner_state)) = name then
+    --   info(runner_trace_logger, "Test case: " & name);
+    --   if has_active_python_runner(runner_state) then
+    --     core_pkg.test_start(name);
+    --   end if;
+    --   set_running_test_case(runner_state, name);
+    --   return true;
+    -- end if;
+    --
+    -- set_running_test_case(runner_state, "");
+    -- return false;
+  end;
+
   -- procedure notify(signal runner : inout runner_sync_t;
   --                  idx : natural := runner_event_idx) is
   -- begin
@@ -33,7 +67,6 @@ package body run_pkg is
     -- variable test_case_candidates : lines_t;
     -- variable selected_enabled_test_cases : line;
   begin
-
     -- -- fake active python runner key is only used during testing in tb_run.vhd
     -- -- to avoid creating vunit_results file
     -- set_active_python_runner(runner_state,
@@ -135,328 +168,22 @@ package body run_pkg is
 
   end procedure test_runner_cleanup;
 
-  -- impure function num_of_enabled_test_cases
-  --   return integer is
-  -- begin
-  --   return get_num_of_test_cases(runner_state);
-  -- end;
-  --
-  -- impure function enabled (
-  --   constant name : string)
-  --   return boolean is
-  --   variable i : natural := 1;
-  -- begin
-  --   if get_run_all(runner_state) then
-  --     return true;
-  --   end if;
-  --
-  --   for i in 1 to get_num_of_test_cases(runner_state) loop
-  --     if get_test_case_name(runner_state, i) = name then
-  --       return true;
-  --     end if;
-  --   end loop;
-  --
-  --   return false;
-  -- end;
-  --
-  -- impure function test_suite
-  --   return boolean is
-  --   variable ret_val : boolean;
-  -- begin
-  --   init_test_case_iteration(runner_state);
-  --
-  --   if get_test_suite_completed(runner_state) then
-  --     ret_val := false;
-  --   elsif get_run_all(runner_state) then
-  --     ret_val := get_has_run_since_last_loop_check(runner_state);
-  --   else
-  --     if get_test_suite_iteration(runner_state) > 0 then
-  --       inc_active_test_case_index(runner_state);
-  --     end if;
-  --
-  --     ret_val := get_active_test_case_index(runner_state) <= get_num_of_test_cases(runner_state);
-  --   end if;
-  --
-  --   clear_has_run_since_last_loop_check(runner_state);
-  --
-  --   if ret_val then
-  --     inc_test_suite_iteration(runner_state);
-  --     set_phase(runner_state, test_case_setup);
-  --     trace(runner_trace_logger, "Entering test case setup phase.");
-  --   else
-  --     set_test_suite_completed(runner_state);
-  --     set_phase(runner_state, test_suite_cleanup);
-  --     trace(runner_trace_logger, "Entering test suite cleanup phase.");
-  --   end if;
-  --
-  --   return ret_val;
-  -- end;
 
-  -- impure function test_case
-  --   return boolean is
-  -- begin
-  --   if get_test_case_iteration(runner_state) = 0 then
-  --     set_phase(runner_state, test_case);
-  --     trace(runner_trace_logger, "Entering test case phase.");
-  --     inc_test_case_iteration(runner_state);
-  --     clear_test_case_exit_after_error(runner_state);
-  --     clear_test_suite_exit_after_error(runner_state);
-  --     set_running_test_case(runner_state, "");
-  --     return true;
-  --   else
-  --     set_phase(runner_state, test_case_cleanup);
-  --     trace(runner_trace_logger, "Entering test case cleanup phase.");
-  --     return false;
-  --   end if;
-  -- end function test_case;
-  --
-  -- impure function run (
-  --   constant name : string)
-  --   return boolean is
-  --
-  --   impure function has_run (
-  --     constant name : string)
-  --     return boolean is
-  --   begin
-  --     for i in 1 to get_num_of_run_test_cases(runner_state) loop
-  --       if get_run_test_case(runner_state, i) = name then
-  --         return true;
-  --       end if;
-  --     end loop;
-  --     return false;
-  --   end function has_run;
-  --
-  --   procedure register_run (
-  --     constant name : in string) is
-  --   begin
-  --     inc_num_of_run_test_cases(runner_state);
-  --     set_has_run_since_last_loop_check(runner_state);
-  --     set_run_test_case(runner_state, get_num_of_run_test_cases(runner_state), name);
-  --   end procedure register_run;
-  --
-  -- begin
-  --   if get_test_suite_completed(runner_state) then
-  --     set_running_test_case(runner_state, "");
-  --     return false;
-  --   elsif get_run_all(runner_state) then
-  --     if not has_run(name) then
-  --       register_run(name);
-  --       info(runner_trace_logger, "Test case: " & name);
-  --       if has_active_python_runner(runner_state) then
-  --         core_pkg.test_start(name);
-  --       end if;
-  --       set_running_test_case(runner_state, name);
-  --       return true;
-  --     end if;
-  --   elsif get_test_case_name(runner_state, get_active_test_case_index(runner_state)) = name then
-  --     info(runner_trace_logger, "Test case: " & name);
-  --     if has_active_python_runner(runner_state) then
-  --       core_pkg.test_start(name);
-  --     end if;
-  --     set_running_test_case(runner_state, name);
-  --     return true;
-  --   end if;
-  --
-  --   set_running_test_case(runner_state, "");
-  --   return false;
-  -- end;
-  --
-  -- impure function active_test_case
+  -- impure function check_if_test (
+  --   constant runner_cfg : string)
   --   return string is
+  --     variable tests : lines_t;
+  --     variable tests_str : string;
+  --     variable num_tests : integer := 0;
   -- begin
-  --   if get_run_all(runner_state) then
-  --     return "";
-  --   end if;
-  --   return get_test_case_name(runner_state, get_active_test_case_index(runner_state));
-  -- end;
-  --
-  -- impure function running_test_case
-  --   return string is
-  -- begin
-  --   return get_running_test_case(runner_state);
-  -- end;
-  --
-  -- procedure set_timeout(signal runner : inout runner_sync_t;
-  --                       constant timeout : in time) is
-  -- begin
-  --   set_timeout(runner_state, timeout);
-  --   notify(runner, runner_timeout_update_idx);
-  -- end;
-  --
-  -- procedure test_runner_watchdog (
-  --   signal runner                    : inout runner_sync_t;
-  --   constant timeout                 : in    time;
-  --   constant do_runner_cleanup : boolean := true) is
-  --
-  --   variable current_timeout : time := timeout;
-  -- begin
-  --
-  --   loop
-  --     wait until (runner(runner_exit_status_idx) = runner_exit_without_errors or
-  --                 runner(runner_timeout_update_idx) = runner_event) for current_timeout;
-  --
-  --     if runner(runner_timeout_update_idx) = runner_event then
-  --       debug(runner_trace_logger, "Update watchdog timeout " & time'image(current_timeout) & ".");
-  --       current_timeout := get_timeout(runner_state);
-  --     else
-  --       exit;
+  --   tests_str := get(runner_cfg, "output path");
+  --   for i in 0 to tests_str'length-1 loop
+  --     if ( tests_str(i) = ',' ) then
+  --       num_tests := num_tests + 1;
   --     end if;
   --   end loop;
   --
-  --   if not (runner(runner_exit_status_idx) = runner_exit_without_errors) then
-  --     notify(runner, runner_timeout_idx);
-  --     wait until runner(runner_timeout_idx) = idle_runner;
-  --     error(runner_trace_logger, "Test runner timeout after " & time'image(current_timeout) & ".");
-  --     if do_runner_cleanup then
-  --       test_runner_cleanup(runner);
-  --     end if;
-  --   end if;
-  -- end;
-  --
-  -- function timeout_notification (
-  --   signal runner : runner_sync_t
-  -- ) return boolean is
-  -- begin
-  --   return runner(runner_timeout_idx) = runner_event;
-  -- end;
-  --
-  -- impure function test_suite_error (
-  --   constant err : boolean)
-  --   return boolean is
-  -- begin
-  --   if err then
-  --     set_test_suite_completed(runner_state);
-  --     set_phase(runner_state, test_case_cleanup);
-  --     trace(runner_trace_logger, "Entering test case cleanup phase.");
-  --     set_test_suite_exit_after_error(runner_state);
-  --   end if;
-  --
-  --   return err;
-  -- end function test_suite_error;
-  --
-  -- impure function test_case_error (
-  --   constant err : boolean)
-  --   return boolean is
-  -- begin
-  --   if err then
-  --     set_phase(runner_state, test_case_cleanup);
-  --     trace(runner_trace_logger, "Entering test case cleanup phase.");
-  --     set_test_case_exit_after_error(runner_state);
-  --   end if;
-  --
-  --   return err;
-  -- end function test_case_error;
-  --
-  -- impure function test_suite_exit
-  --   return boolean is
-  -- begin
-  --   return get_test_suite_exit_after_error(runner_state);
-  -- end function test_suite_exit;
-  --
-  -- impure function test_case_exit
-  --   return boolean is
-  -- begin
-  --   return get_test_case_exit_after_error(runner_state);
-  -- end function test_case_exit;
-  --
-  -- impure function test_exit
-  --   return boolean is
-  -- begin
-  --   return test_suite_exit or test_case_exit;
-  -- end function test_exit;
-  --
-  -- procedure lock_entry (
-  --   signal runner : inout runner_sync_t;
-  --   constant phase : in runner_legal_phase_t;
-  --   constant logger : in logger_t := runner_trace_logger;
-  --   constant line_num  : in natural := 0;
-  --   constant file_name : in string := "") is
-  -- begin
-  --   lock_entry(runner_state, phase);
-  --   log(logger, "Locked " & replace(runner_phase_t'image(phase), "_", " ") & " phase entry gate.", trace, line_num, file_name);
-  --   notify(runner);
-  -- end;
-  --
-  -- procedure unlock_entry (
-  --   signal runner : inout runner_sync_t;
-  --   constant phase : in runner_legal_phase_t;
-  --   constant logger : in logger_t := runner_trace_logger;
-  --   constant line_num  : in natural := 0;
-  --   constant file_name : in string := "") is
-  -- begin
-  --   unlock_entry(runner_state, phase);
-  --   log(logger, "Unlocked " & replace(runner_phase_t'image(phase), "_", " ") & " phase entry gate.", trace, line_num, file_name);
-  --   notify(runner);
-  -- end;
-  --
-  -- procedure lock_exit (
-  --   signal runner : inout runner_sync_t;
-  --   constant phase : in runner_legal_phase_t;
-  --   constant logger : in logger_t := runner_trace_logger;
-  --   constant line_num  : in natural := 0;
-  --   constant file_name : in string := "") is
-  -- begin
-  --   lock_exit(runner_state, phase);
-  --   log(logger, "Locked " & replace(runner_phase_t'image(phase), "_", " ") & " phase exit gate.", trace, line_num, file_name);
-  --   notify(runner);
-  -- end;
-  --
-  -- procedure unlock_exit (
-  --   signal runner : inout runner_sync_t;
-  --   constant phase : in runner_legal_phase_t;
-  --   constant logger : in logger_t := runner_trace_logger;
-  --   constant line_num  : in natural := 0;
-  --   constant file_name : in string := "") is
-  -- begin
-  --   unlock_exit(runner_state, phase);
-  --   log(logger, "Unlocked " & replace(runner_phase_t'image(phase), "_", " ") & " phase exit gate.", trace, line_num, file_name);
-  --   notify(runner);
-  -- end;
-  --
-  -- procedure wait_until (
-  --   signal runner : in runner_sync_t;
-  --   constant phase : in runner_legal_phase_t;
-  --   constant logger : in logger_t := runner_trace_logger;
-  --   constant line_num  : in natural := 0;
-  --   constant file_name : in string := "") is
-  -- begin
-  --   if get_phase(runner_state) /= phase then
-  --     log(logger, "Waiting for phase = " & replace(runner_phase_t'image(phase), "_", " ") & ".", trace, line_num, file_name);
-  --     wait on runner until get_phase(runner_state) = phase;
-  --     log(logger, "Waking up. Phase is " & replace(runner_phase_t'image(phase), "_", " ") & ".", trace, line_num, file_name);
-  --   end if;
-  -- end;
-  --
-  -- procedure entry_gate (
-  --   signal runner : inout runner_sync_t) is
-  -- begin
-  --   if entry_is_locked(runner_state, get_phase(runner_state)) then
-  --     trace(runner_trace_logger, "Halting on " & replace(runner_phase_t'image(get_phase(runner_state)), "_", " ") & " phase entry gate.");
-  --     wait on runner until not entry_is_locked(runner_state, get_phase(runner_state)) for max_locked_time;
-  --   end if;
-  --   notify(runner);
-  --   trace(runner_trace_logger, "Passed " & replace(runner_phase_t'image(get_phase(runner_state)), "_", " ") & " phase entry gate.");
-  -- end procedure entry_gate;
-  --
-  -- procedure exit_gate (
-  --   signal runner : in runner_sync_t) is
-  -- begin
-  --   if exit_is_locked(runner_state, get_phase(runner_state)) then
-  --     trace(runner_trace_logger, "Halting on " & replace(runner_phase_t'image(get_phase(runner_state)), "_", " ") & " phase exit gate.");
-  --     wait on runner until not exit_is_locked(runner_state, get_phase(runner_state)) for max_locked_time;
-  --   end if;
-  --   trace(runner_trace_logger, "Passed " & replace(runner_phase_t'image(get_phase(runner_state)), "_", " ") & " phase exit gate.");
-  -- end procedure exit_gate;
-  --
-  -- impure function active_python_runner (
-  --   constant runner_cfg : string)
-  --   return boolean is
-  -- begin
-  --   if has_key(runner_cfg, "active python runner") then
-  --     return get(runner_cfg, "active python runner") = "true";
-  --   else
-  --     return false;
-  --   end if;
+  --   report("Numero de tests: " & integer'image(num_tests));
   -- end;
 
   impure function output_path (
@@ -492,6 +219,5 @@ package body run_pkg is
   --     return "";
   --   end if;
   -- end;
-
 
 end package body run_pkg;

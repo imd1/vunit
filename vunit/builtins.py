@@ -79,7 +79,8 @@ class Builtins(object):
                          ['path/to/custom/file'].
         """
         if (simulator_is("xsim")):
-            self._add_files(join(VHDL_PATH, "xsim", "data_types", "src", "*.vhd"))
+            # self._add_files(join(VHDL_PATH, "xsim", "data_types", "src", "*.vhd"))
+            pass
         else:
             self._add_files(join(VHDL_PATH, "data_types", "src", "*.vhd"))
 
@@ -252,6 +253,7 @@ in your VUnit Git repository? You have to do this first if installing using setu
                 "string_ops",
                 "dictionary",
                 "core",
+                # "check",
                 "run"
             ]
         else:
