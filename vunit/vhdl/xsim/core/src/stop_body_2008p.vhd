@@ -1,4 +1,3 @@
-
 -- This Source Code Form is subject to the terms of the Mozilla Public
 -- License, v. 2.0. If a copy of the MPL was not distributed with this file,
 -- You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -8,6 +7,9 @@
 package body stop_pkg is
   procedure stop(status : integer) is
   begin
-    report "Stopping simulation with status " & integer'image(status) severity failure;
+    if status /= 0 then
+      report "Stopping simulation with status " & integer'image(status) severity failure;
+    end if;
+    std.env.stop(status);
   end procedure;
 end package body;

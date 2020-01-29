@@ -65,8 +65,18 @@ package integer_array_pkg is
     arr : integer_array_t;
     x,y : integer
   ) return integer;
-  -- procedure set(idx : integer; value : integer);
-  -- procedure set(x,y : integer; value : integer);
+
+  procedure set (
+    variable arr   : inout integer_array_t;
+    idx   : integer;
+    value : integer
+  );
+
+  procedure set (
+    variable arr   : inout integer_array_t;
+    x,y   : integer;
+    value : integer
+  );
 
   procedure append (
     variable arr : inout integer_array_t;
@@ -142,6 +152,22 @@ package body integer_array_pkg is
     assert x<arr.width report "2d X=" & integer'image(x) & " > array width=" & integer'image(arr.width) severity error;
     assert y<arr.height report "2d Y=" & integer'image(y) & " > array height=" & integer'image(arr.height) severity error;
     return arr.data(y)(x);
+  end;
+
+  procedure set (
+    variable arr   : inout integer_array_t;
+    idx   : integer;
+    value : integer
+  ) is begin
+    arr.data(idx)(0) := value;
+  end;
+
+  procedure set (
+    variable arr   : inout integer_array_t;
+    x,y   : integer;
+    value : integer
+  ) is begin
+    arr.data(y)(x) := value;
   end;
 
   procedure append (
