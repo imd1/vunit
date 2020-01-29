@@ -13,3 +13,8 @@ from vunit.vivado.vivado import (
     add_from_compile_order_file,
     create_compile_order_file,
 )
+
+from vunit.vivado.vivado_util import (
+    add_vivado_ip,
+    add_project_ip
+)
