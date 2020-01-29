@@ -68,6 +68,9 @@ class Builtins(object):
             if not supports_context and file_name.endswith("_context.vhd"):
                 continue
 
+            if (self._simulator_class.name == "xsim") and file_name.endswith("_context.vhd"):
+                continue
+
             self._vunit_lib.add_source_file(file_name)
 
     def _add_data_types(self, external=None):
