@@ -42,6 +42,8 @@ def add_from_compile_order_file(
         )
         if(file_name.endswith(".mif")):
             continue
+        if(file_name.endswith(".coe")):
+            continue
         source_file = vunit_obj.library(library_name).add_source_file(
             file_name,
             no_parse=not scan_dependencies,
@@ -100,7 +102,7 @@ def _read_compile_order(file_name):
 
         for line in ifile.readlines():
             library_name, file_type, file_name = line.strip().split(",", 2)
-            assert file_type in ("Verilog", "VHDL", "Verilog Header", "SystemVerilog", "Memory Initialization Files")
+            assert file_type in ("Verilog", "VHDL", "Verilog Header", "SystemVerilog", "Memory Initialization Files", "Coefficient Files")
             libraries.add(library_name)
 
             # Vivado generates duplicate files for different IP:s

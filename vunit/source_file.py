@@ -348,7 +348,7 @@ class VHDLSourceFile(SourceFile):
 
 
 # lower case representation of supported extensions
-XILINX_EXTENSIONS = (".mif")
+XILINX_EXTENSIONS = (".mif",".coe")
 VHDL_EXTENSIONS = (".vhd", ".vhdl", ".vho")
 VERILOG_EXTENSIONS = (".v", ".vp", ".vams", ".vo")
 SYSTEM_VERILOG_EXTENSIONS = (".sv",)
