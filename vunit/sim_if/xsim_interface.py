@@ -161,7 +161,7 @@ class XSimInterface(SimulatorInterface):
                           "-source", tcl_file]
             if not os.path.isfile(tcl_file):
                 with open(tcl_file, 'w+') as xsim_startup_file:
-                    xsim_startup_file.write("set_part xc7a12tcpg238-3\n")
+                    # xsim_startup_file.write("set_part xc7a12tcpg238-3\n")
                     xsim_startup_file.write("xsim " +
                                             ("%s.%s" % (config.library_name,
                                                         config.entity_name)) +
