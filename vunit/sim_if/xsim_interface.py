@@ -17,6 +17,7 @@ import subprocess
 from ..ostools import Process
 from . import SimulatorInterface, StringOption
 from ..exceptions import CompileError
+from shutil import copyfile
 LOGGER = logging.getLogger(__name__)
 
 
@@ -131,7 +132,6 @@ class XSimInterface(SimulatorInterface):
         """
         Simulate with entity as top level using generics
         """
-
         cmd = [join(self._prefix, self._xelab)]
         cmd += ["-debug", "all"]
         cmd += self.libraries_command()
@@ -150,6 +150,11 @@ class XSimInterface(SimulatorInterface):
             os.makedirs(output_path)
         status = True
         try:
+            resources = config.get_resources()
+            for x in resources:
+                file_name = os.path.basename(x)
+                copyfile(x,output_path+"/"+file_name)
+
             proc = Process(cmd, cwd=output_path)
             proc.consume_output()
         except Process.NonZeroExitCode:

@@ -12,7 +12,7 @@ from __future__ import print_function
 from subprocess import check_call
 from os import makedirs
 from os.path import abspath, join, dirname, exists, basename
-
+from shutil import copyfile
 
 def add_from_compile_order_file(
     vunit_obj, compile_order_file, dependency_scan_defaultlib=True
@@ -40,9 +40,8 @@ def add_from_compile_order_file(
         scan_dependencies = (
             dependency_scan_defaultlib and library_name == "xil_defaultlib"
         )
-        if(file_name.endswith(".mif")):
-            continue
-        if(file_name.endswith(".coe")):
+        if(file_name.endswith(".mif") or file_name.endswith(".coe")):
+            vunit_obj.add_resource(file_name)
             continue
         source_file = vunit_obj.library(library_name).add_source_file(
             file_name,
