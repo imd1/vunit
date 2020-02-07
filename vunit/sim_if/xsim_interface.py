@@ -170,6 +170,8 @@ class XSimInterface(SimulatorInterface):
                     xsim_startup_file.write("xsim " +
                                             ("%s.%s" % (config.library_name,
                                                         config.entity_name)) +
+                                            "\nadd_wave {{/" + config.entity_name + "}} "
+                                            "\nrun all"
                                             "\n")
             print("out_path: " + str(output_path))
             print("vivado_cmd: " + str(vivado_cmd))
