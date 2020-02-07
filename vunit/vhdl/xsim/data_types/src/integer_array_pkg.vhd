@@ -181,6 +181,30 @@ package body integer_array_pkg is
     end if;
   end;
 
+  impure function check_csv_width (
+    file_name : string
+  ) return integer is
+    file     fread   : text;
+    variable l       : line;
+    variable tmp     : integer;
+    variable ctmp    : character;
+    variable is_good : boolean;
+    variable width_line : integer := 0;
+  begin
+    file_open(fread, file_name, read_mode);
+    readline(fread, l);
+    width_line := 0;
+    loop
+      read(l, tmp, is_good);
+      exit when not is_good;
+      read(l, ctmp, is_good);
+      width_line := width_line + 1;
+      exit when not is_good;
+    end loop;
+    file_close(fread);
+    return width_line;
+  end;
+
   impure function load_csv_internal (
     file_name : string;
     bit_width : natural := 32;
@@ -195,17 +219,47 @@ package body integer_array_pkg is
       variable acc : integer_vector_access_vector_access_t;
       variable m : integer := 0;
       variable n : integer := 0;
+      variable csv_width : integer := 0;
 
       variable aux : integer_array_t;
       constant max_width  : integer := 32768;
       constant max_height : integer := 2*524288;
     begin
+      csv_width := check_csv_width(file_name);
+
       aux.max_width  := max_width;
       aux.max_height := max_height;
       acc := new integer_vector_access_vector_t'(0 to 2*524288-1 => null);
       file_open(fread, file_name, read_mode);
       while not endfile(fread) loop
-        acc(m) := new integer_vector_t'(0 to 32768-1 => 0);
+        if (csv_width = 1) then
+          acc(m) := new integer_vector_t'(0 to 0 => 0);
+        elsif (csv_width = 2) then
+          acc(m) := new integer_vector_t'(0 to 1 => 0);
+        elsif (csv_width = 3) then
+          acc(m) := new integer_vector_t'(0 to 2 => 0);
+        elsif (csv_width = 4) then
+          acc(m) := new integer_vector_t'(0 to 3 => 0);
+        elsif (csv_width = 5) then
+          acc(m) := new integer_vector_t'(0 to 4 => 0);
+        elsif (csv_width = 6) then
+          acc(m) := new integer_vector_t'(0 to 5 => 0);
+        elsif (csv_width = 7) then
+          acc(m) := new integer_vector_t'(0 to 6 => 0);
+        elsif (csv_width = 8) then
+          acc(m) := new integer_vector_t'(0 to 7 => 0);
+        elsif (csv_width <= 128) then
+          acc(m) := new integer_vector_t'(0 to 128 => 0);
+        elsif (csv_width <= 256) then
+          acc(m) := new integer_vector_t'(0 to 256 => 0);
+        elsif (csv_width <= 512) then
+          acc(m) := new integer_vector_t'(0 to 512 => 0);
+        elsif (csv_width <= 1024) then
+          acc(m) := new integer_vector_t'(0 to 1024 => 0);
+        else
+          acc(m) := new integer_vector_t'(0 to 32768 => 0);
+        end if;
+
         readline(fread, l);
         n := 0;
         loop
