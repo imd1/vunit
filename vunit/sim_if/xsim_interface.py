@@ -132,7 +132,6 @@ class XSimInterface(SimulatorInterface):
         """
         Simulate with entity as top level using generics
         """
-        print("************************************* entra **")
         cmd = [join(self._prefix, self._xelab)]
         cmd += ["-debug", "all"]
         cmd += self.libraries_command()
