@@ -132,11 +132,20 @@ class XSimInterface(SimulatorInterface):
         """
         Simulate with entity as top level using generics
         """
+        print("************************************* entra **")
         cmd = [join(self._prefix, self._xelab)]
         cmd += ["-debug", "all"]
         cmd += self.libraries_command()
         if not (elaborate_only or self._gui):
             cmd += ["--runall"]
+
+        cmd += ["--notimingchecks"]
+        cmd += ["--nospecify"]
+        cmd += ["--nolog"]
+        cmd += ["--relax"]
+        cmd += ["--incr"]
+        cmd += ["--sdfnowarn"]
+
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
         timescale = config.sim_options.get(self.name + '.timescale', None)
         if timescale:
