@@ -257,7 +257,7 @@ in your VUnit Git repository? You have to do this first if installing using setu
                 "dictionary",
                 "core",
                 "logging",
-                # "check",
+                "check",
                 "run"
             ]
         else:
