@@ -10,8 +10,9 @@ Interface for Vivado XSim simulator
 
 from __future__ import print_function
 import logging
-from os.path import join
 import os
+from os.path import join
+from os.path import split
 import shutil
 import subprocess
 from ..ostools import Process
@@ -25,7 +26,7 @@ class XSimInterface(SimulatorInterface):
     """
     Interface for Vivado xsim simulator
     """
-
+    enable_glb = False
     name = "xsim"
     executable = os.environ.get("XSIM", "xsim")
 
@@ -119,6 +120,9 @@ class XSimInterface(SimulatorInterface):
         """
         Returns the command to compile a vhdl file
         """
+        head, tail = split(source_file)
+        if (tail == 'glbl.v'):
+            self.enable_glb = True
         cmd += self.work_library_argument(source_file)
         cmd += self.libraries_command()
         for include_dir in source_file.include_dirs:
@@ -146,6 +150,9 @@ class XSimInterface(SimulatorInterface):
         cmd += ["--sdfnowarn"]
 
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
+        if (self.enable_glb == True):
+            cmd += ["%s.%s" % (config.library_name, 'glbl')]
+
         timescale = config.sim_options.get(self.name + '.timescale', None)
         if timescale:
             cmd += ['-timescale', timescale]
@@ -157,6 +164,7 @@ class XSimInterface(SimulatorInterface):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
         status = True
+        print(cmd)
         try:
             resources = config.get_resources()
             for x in resources:
