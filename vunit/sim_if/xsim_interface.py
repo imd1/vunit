@@ -12,11 +12,10 @@ from __future__ import print_function
 import logging
 import os
 from os.path import join
-from os.path import split
 import shutil
 import subprocess
 from ..ostools import Process
-from . import SimulatorInterface, StringOption
+from . import SimulatorInterface, StringOption, BooleanOption
 from ..exceptions import CompileError
 from shutil import copyfile
 LOGGER = logging.getLogger(__name__)
@@ -26,7 +25,6 @@ class XSimInterface(SimulatorInterface):
     """
     Interface for Vivado xsim simulator
     """
-    enable_glb = False
     name = "xsim"
     executable = os.environ.get("XSIM", "xsim")
 
@@ -35,6 +33,7 @@ class XSimInterface(SimulatorInterface):
 
     sim_options = [
         StringOption("xsim.timescale"),
+        BooleanOption("xsim.enable_glbl"),
     ]
 
     @classmethod
@@ -120,9 +119,6 @@ class XSimInterface(SimulatorInterface):
         """
         Returns the command to compile a vhdl file
         """
-        head, tail = split(source_file.name)
-        if (tail == 'glbl.v'):
-            self.enable_glb = True
         cmd += self.work_library_argument(source_file)
         cmd += self.libraries_command()
         for include_dir in source_file.include_dirs:
@@ -150,8 +146,9 @@ class XSimInterface(SimulatorInterface):
         cmd += ["--sdfnowarn"]
 
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
-        if (self.enable_glb == True):
 
+        enable_glbl = config.sim_options.get(self.name + '.enable_glbl', None)
+        if (enable_glbl == True):
             cmd += ["%s.%s" % (config.library_name, 'glbl')]
 
         timescale = config.sim_options.get(self.name + '.timescale', None)
