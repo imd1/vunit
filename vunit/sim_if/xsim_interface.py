@@ -120,7 +120,7 @@ class XSimInterface(SimulatorInterface):
         """
         Returns the command to compile a vhdl file
         """
-        head, tail = split(source_file)
+        head, tail = split(source_file.name)
         if (tail == 'glbl.v'):
             self.enable_glb = True
         cmd += self.work_library_argument(source_file)
@@ -151,6 +151,7 @@ class XSimInterface(SimulatorInterface):
 
         cmd += ["%s.%s" % (config.library_name, config.entity_name)]
         if (self.enable_glb == True):
+
             cmd += ["%s.%s" % (config.library_name, 'glbl')]
 
         timescale = config.sim_options.get(self.name + '.timescale', None)
