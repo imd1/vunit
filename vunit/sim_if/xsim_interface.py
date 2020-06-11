@@ -181,12 +181,21 @@ class XSimInterface(SimulatorInterface):
             if not os.path.isfile(tcl_file):
                 with open(tcl_file, 'w+') as xsim_startup_file:
                     xsim_startup_file.write("set_part xc7a12tcpg238-3\n")
-                    xsim_startup_file.write("xsim " +
-                                            ("%s.%s" % (config.library_name,
-                                                        config.entity_name)) +
-                                            "\nadd_wave {{/" + config.entity_name + "}} "
-                                            "\nrun all"
-                                            "\n")
+                    if (enable_glbl == True):
+                        xsim_startup_file.write("xsim " +
+                                                ("%s.%s" % (config.library_name,
+                                                            config.entity_name)) +
+                                                            "#" + config.library_name + ".glbl" +
+                                                "\nadd_wave {{/" + config.entity_name + "}} "
+                                                "\nrun all"
+                                                "\n")
+                    else:
+                        xsim_startup_file.write("xsim " +
+                                                ("%s.%s" % (config.library_name,
+                                                            config.entity_name)) +
+                                                "\nadd_wave {{/" + config.entity_name + "}} "
+                                                "\nrun all"
+                                                "\n")
             print("out_path: " + str(output_path))
             print("vivado_cmd: " + str(vivado_cmd))
             try:
